@@ -1,0 +1,58 @@
+{{!-- The subscription panel.
+
+     One block, used in the footer of every page. The heading and the line
+     under it are the two fields in Design & branding → Customise
+     (signup_heading / signup_subheading), so the wording can be changed in
+     Ghost without touching the theme.
+
+     It is hidden automatically for anyone already signed in, and for a site
+     with memberships turned off. --}}
+
+{{#if @site.members_enabled}}
+{{#unless @member}}
+
+<section class="tal-subscribe">
+    <div class="tal-axis tal-subscribe-inner">
+
+        <div class="tal-subscribe-text">
+            <p class="tal-subscribe-kicker">{{@site.title}}</p>
+
+            <h2 class="tal-subscribe-title is-title">
+                {{#if @custom.signup_heading}}{{@custom.signup_heading}}{{else}}{{t "Follow the record as it is published"}}{{/if}}
+            </h2>
+
+            <p class="tal-subscribe-sub is-body">
+                {{#if @custom.signup_subheading}}{{@custom.signup_subheading}}{{else}}{{@site.description}}{{/if}}
+            </p>
+
+            {{!-- The three promises. Wording lives in locales/en.json under
+                 the keys below — Ghost's 20-setting limit is already spent, so
+                 there was no room to put these in Design & branding. Anything
+                 with a blank value there falls back to the English written in
+                 the key itself, so nothing can render empty. --}}
+            <ul class="tal-subscribe-points">
+                <li>
+                    <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false"><path d="m4 10.5 4 4 8-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    {{t "Every new investigation, in full, by email"}}
+                </li>
+                <li>
+                    <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false"><path d="m4 10.5 4 4 8-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    {{t "Board data and records as they are released"}}
+                </li>
+                <li>
+                    <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false"><path d="m4 10.5 4 4 8-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    {{t "Free to read. Unsubscribe in one click."}}
+                </li>
+            </ul>
+        </div>
+
+        <div class="tal-subscribe-form">
+            {{> "email-subscription" email_field_id="footer-email"}}
+            <p class="tal-subscribe-note">{{t "We use your address to send the newsletter and nothing else. It is never sold or shared."}}</p>
+        </div>
+
+    </div>
+</section>
+
+{{/unless}}
+{{/if}}

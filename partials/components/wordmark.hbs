@@ -1,0 +1,21 @@
+{{!-- The front-page wordmark.
+
+     Three parts, set live rather than as an image so it stays sharp on any
+     screen, can be selected and read aloud, and recolours itself when the
+     masthead is running over a photograph.
+
+       "The"       small, light grey, sitting above and inset from the name
+       "A"         carries the rule beneath it — the same mark as the site icon
+       "dvisory"   the name proper, in the accent navy
+       "Letter"    mid grey, so the eye lands on "Advisory"
+
+     The visually hidden line above it is what a screen reader announces, so
+     the decorative split does not reach assistive technology as three
+     unrelated fragments. --}}
+
+<span class="tal-wm-vh">{{@site.title}}</span>
+
+<span class="tal-wm" aria-hidden="true">
+    <span class="tal-wm-the">The</span>
+    <span class="tal-wm-name"><span class="tal-wm-a">A</span>dvisory<span class="tal-wm-letter"> Letter</span></span>
+</span>

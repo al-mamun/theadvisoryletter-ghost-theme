@@ -1,0 +1,31 @@
+{{!-- Share links for the sticky rail on pages and articles.
+
+     These are plain links rather than a script: no third-party JavaScript, no
+     tracking, and they keep working if scripts are blocked. --}}
+
+<div class="tal-share">
+
+    <a class="tal-share-link" href="https://x.com/intent/tweet?url={{encode (url absolute="true")}}&amp;text={{encode title}}"
+       target="_blank" rel="noopener" aria-label="{{t "Share on X"}}">
+        {{> "icons/x"}}
+    </a>
+
+    <a class="tal-share-link" href="https://www.linkedin.com/sharing/share-offsite/?url={{encode (url absolute="true")}}"
+       target="_blank" rel="noopener" aria-label="{{t "Share on LinkedIn"}}">
+        {{> "icons/linkedin"}}
+    </a>
+
+    <a class="tal-share-link" href="https://www.facebook.com/sharer/sharer.php?u={{encode (url absolute="true")}}"
+       target="_blank" rel="noopener" aria-label="{{t "Share on Facebook"}}">
+        {{> "icons/facebook"}}
+    </a>
+
+    <a class="tal-share-link" href="mailto:?subject={{encode title}}&amp;body={{encode (url absolute="true")}}"
+       aria-label="{{t "Share by email"}}">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+            <rect x="2.5" y="4.5" width="19" height="15" rx="2" stroke="currentColor" stroke-width="1.7"/>
+            <path d="m3.5 6.5 8.5 6 8.5-6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+
+</div>

@@ -1,0 +1,19 @@
+{{!-- The slim version of the subscription block, shown at the end of an
+     article where a reader has just finished a piece. Deliberately quieter
+     than the panel in the footer so the page does not ask twice in the same
+     voice. --}}
+
+{{#if @site.members_enabled}}
+{{#unless @member}}
+
+<aside class="tal-subscribe-inline">
+    <p class="tal-subscribe-inline-kicker">{{t "Keep reading"}}</p>
+    <h2 class="tal-subscribe-inline-title is-title">
+        {{#if @custom.signup_heading}}{{@custom.signup_heading}}{{else}}{{t "Get the next investigation by email"}}{{/if}}
+    </h2>
+    {{> "email-subscription" email_field_id="post-email"}}
+    <p class="tal-subscribe-inline-note">{{t "Free. Unsubscribe in one click."}}</p>
+</aside>
+
+{{/unless}}
+{{/if}}
