@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 620" width="1600" height="620" role="img" aria-label="">
+<!--
+  The Arizona State Capitol, drawn rather than photographed.
+
+  This is the stand-in behind the front-page masthead. It exists so the hero
+  treatment can be seen before a real photograph is chosen. To replace it,
+  set a feature image on the "home" page in Ghost — the theme uses that
+  instead the moment it exists, and this file is never loaded again.
+
+  Drawn as a flat silhouette on purpose: it sits under a heavy navy wash at
+  low opacity, where a detailed photograph would turn to noise.
+-->
+<defs>
+  <linearGradient id="tal-cap-fade" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0"    stop-color="#ffffff" stop-opacity="0.52"/>
+    <stop offset="0.62" stop-color="#ffffff" stop-opacity="0.34"/>
+    <stop offset="1"    stop-color="#ffffff" stop-opacity="0.12"/>
+  </linearGradient>
+</defs>
+
+<g fill="url(#tal-cap-fade)">
+
+  <!-- Winged Victory weathervane and finial -->
+  <path d="M800 24 L806 40 L800 52 L794 40 Z"/>
+  <path d="M800 52 c9 0 15 5 15 12 c0 6-6 10-15 10 c-9 0-15-4-15-10 c0-7 6-12 15-12 Z"/>
+  <rect x="796" y="74" width="8" height="14"/>
+
+  <!-- Lantern -->
+  <path d="M778 88 h44 l-5 10 h-34 Z"/>
+  <rect x="781" y="98" width="38" height="34"/>
+  <rect x="787" y="104" width="7" height="22" opacity="0.55"/>
+  <rect x="806" y="104" width="7" height="22" opacity="0.55"/>
+  <path d="M772 132 h56 l-6 9 h-44 Z"/>
+
+  <!-- Dome -->
+  <path d="M731 246 c0-52 31-105 69-105 c38 0 69 53 69 105 Z"/>
+  <!-- ribs, faintly -->
+  <g opacity="0.42">
+    <path d="M800 143 v103" stroke="#1B3A5C" stroke-width="2" fill="none" opacity="0.30"/>
+    <path d="M769 150 c-14 26-21 60-21 96" stroke="#1B3A5C" stroke-width="2" fill="none" opacity="0.30"/>
+    <path d="M831 150 c14 26 21 60 21 96" stroke="#1B3A5C" stroke-width="2" fill="none" opacity="0.30"/>
+  </g>
+
+  <!-- Drum below the dome -->
+  <rect x="723" y="246" width="154" height="12"/>
+  <rect x="731" y="258" width="138" height="48"/>
+  <g opacity="0.5">
+    <rect x="742" y="266" width="9" height="32"/>
+    <rect x="764" y="266" width="9" height="32"/>
+    <rect x="786" y="266" width="9" height="32"/>
+    <rect x="808" y="266" width="9" height="32"/>
+    <rect x="830" y="266" width="9" height="32"/>
+    <rect x="849" y="266" width="9" height="32"/>
+  </g>
+  <rect x="717" y="306" width="166" height="14"/>
+
+  <!-- Central pavilion: pediment over the portico -->
+  <path d="M620 372 L800 320 L980 372 Z"/>
+  <rect x="616" y="372" width="368" height="16"/>
+
+  <!-- Portico columns -->
+  <g>
+    <rect x="646" y="388" width="20" height="150"/>
+    <rect x="691" y="388" width="20" height="150"/>
+    <rect x="736" y="388" width="20" height="150"/>
+    <rect x="781" y="388" width="20" height="150"/>
+    <rect x="826" y="388" width="20" height="150"/>
+    <rect x="871" y="388" width="20" height="150"/>
+    <rect x="916" y="388" width="20" height="150"/>
+  </g>
+  <rect x="632" y="534" width="336" height="12"/>
+
+  <!-- Wings, left and right -->
+  <rect x="300" y="430" width="316" height="10"/>
+  <rect x="308" y="440" width="300" height="106"/>
+  <rect x="984" y="430" width="316" height="10"/>
+  <rect x="992" y="440" width="300" height="106"/>
+
+  <!-- Wing window bays -->
+  <g opacity="0.42" fill="#1B3A5C">
+    <rect x="336" y="462" width="22" height="60"/><rect x="376" y="462" width="22" height="60"/>
+    <rect x="416" y="462" width="22" height="60"/><rect x="456" y="462" width="22" height="60"/>
+    <rect x="496" y="462" width="22" height="60"/><rect x="536" y="462" width="22" height="60"/>
+    <rect x="1022" y="462" width="22" height="60"/><rect x="1062" y="462" width="22" height="60"/>
+    <rect x="1102" y="462" width="22" height="60"/><rect x="1142" y="462" width="22" height="60"/>
+    <rect x="1182" y="462" width="22" height="60"/><rect x="1222" y="462" width="22" height="60"/>
+  </g>
+
+  <!-- Terrace and steps -->
+  <rect x="268" y="546" width="1064" height="14"/>
+  <rect x="592" y="560" width="416" height="12"/>
+  <rect x="568" y="572" width="464" height="12"/>
+  <rect x="544" y="584" width="512" height="12"/>
+  <rect x="200" y="596" width="1200" height="24"/>
+
+</g>
+</svg>
