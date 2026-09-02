@@ -1,0 +1,2556 @@
+/* ==========================================================================
+   TheAdvisoryLetter.org — publication styles
+   Layered on top of Source's screen.css. Everything specific to this
+   publication lives in this one file, so upstream Source updates stay clean.
+
+   1. Tokens
+   2. Typography
+   3. Front page — shared band scaffolding
+   4. Front page — masthead and board card
+   5. Front page — statement
+   6. Front page — latest reporting
+   7. Front page — the record
+   8. Front page — call to action
+   9. Buttons and arrow links
+  10. Article index and simple page headers
+  10b. Error pages
+  10c. Inner pages — masthead band, reading column and rail
+  11. Jump-to-section list
+  12. Disclaimers and standing notices
+  13. Google Form placeholder
+  13b. The subscription panel
+  14. Footer
+  15. Mobile
+  16. Reduced motion and print
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Tokens
+   -------------------------------------------------------------------------- */
+
+:root {
+    --tal-rule: rgba(0, 0, 0, 0.1);
+    --tal-muted: rgba(0, 0, 0, 0.62);
+    --tal-note-bg: rgba(0, 0, 0, 0.028);
+    --tal-max-measure: 680px;
+
+    /* The one vertical axis the whole site shares.
+
+       This is read here, at :root, on purpose. A custom property resolves at
+       the element that declares it, so --tal-axis-width freezes at the site
+       container width even though Source later re-declares --container-width
+       as 1120px inside .gh-article. Without this, an article's masthead would
+       quietly sit 100px narrower than the site header above it. */
+    --tal-axis-width: var(--container-width, 1320px);
+
+    /* The margin Source keeps between the axis and the window edge. Copied
+       from its own .gh-outer rule so a band, the site header and the footer
+       measure to the same pixel at every window width. */
+    --tal-edge: max(4vmin, 20px);
+
+    /* The reading column, the rail beside it, and the gap between them. */
+    --tal-measure: 72rem;
+    --tal-rail-width: 30rem;
+    --tal-gutter: 8.8rem;
+
+    /* Two washes of the accent colour, used for the band backgrounds. They
+       follow whatever accent is set in Design & branding, with a flat grey
+       fallback for browsers without color-mix(). */
+    --tal-wash: #f6f7f9;
+    --tal-wash-soft: #fafbfc;
+    --tal-shadow: rgba(16, 35, 58, 0.35);
+
+    /* The second accent: a muted gold, used sparingly and always as a line or
+       a label rather than as a fill. It marks the rule under the A in the
+       wordmark, the thin rules that separate sections, the small uppercase
+       labels above them, and the left edge of the newest article.
+
+       This one is deliberately not wired to Design & branding. Ghost allows a
+       single accent colour, that slot belongs to the navy, and a gold that
+       drifted with it would stop being a counterpoint. To change it, change
+       the value here. */
+    --tal-gold: #C4A35A;
+    --tal-gold-soft: rgba(196, 163, 90, 0.34);
+
+    /* The navy wash laid over the masthead photograph. Heavier on the left,
+       where the words are, and lighter on the right so the building is still
+       legible behind the board card. */
+    --tal-hero-ink: #12283f;
+    --tal-hero-image: url("images/capitol.svg");
+}
+
+@supports (background: color-mix(in srgb, red 5%, white)) {
+    :root {
+        --tal-wash: color-mix(in srgb, var(--ghost-accent-color) 6%, #fff);
+        --tal-wash-soft: color-mix(in srgb, var(--ghost-accent-color) 3.5%, #fff);
+        --tal-shadow: color-mix(in srgb, var(--ghost-accent-color) 60%, transparent);
+    }
+}
+
+/* --------------------------------------------------------------------------
+   2. Typography — text first, no decoration
+   -------------------------------------------------------------------------- */
+
+.gh-content {
+    font-size: 1.75rem;
+    line-height: 1.7;
+}
+
+.gh-content > h2,
+.gh-content > h3 {
+    letter-spacing: -0.01em;
+}
+
+/* Anchor links land below the sticky navigation instead of under it. */
+.gh-content [id],
+.gh-article-header [id] {
+    scroll-margin-top: 96px;
+}
+
+/* A heading that is the target of a jump link gets a brief, quiet highlight. */
+.gh-content [id]:target {
+    animation: tal-target-flash 1.6s ease-out 1;
+}
+
+@keyframes tal-target-flash {
+    0%   { background-color: rgba(255, 214, 0, 0.28); }
+    100% { background-color: transparent; }
+}
+
+/* --------------------------------------------------------------------------
+   3. Front page — shared band scaffolding
+
+   The front page is built from full-width bands. Each band spans the window;
+   the inner wrapper lines up with the site header and footer so every edge on
+   the page shares one vertical axis.
+   -------------------------------------------------------------------------- */
+
+.tal-band {
+    width: 100%;
+    padding: 9rem 0;
+}
+
+/* .tal-axis is the same wrapper under a name that reads correctly away from
+   the front page. Every masthead, body and rail on every inner page sits in
+   one of these, which is what puts the whole site on a single left edge.
+
+   The width is written as "the window less the edge margin, capped at the axis
+   width" rather than as a max-width plus padding. That is how Source sizes its
+   own header and footer, so this lands on exactly the same pixel at every
+   window width instead of the 32px inside it that padding would give. */
+.tal-band-inner,
+.tal-axis,
+.tal-home .gh-canvas {
+    width: calc(100% - 2 * var(--tal-edge));
+    max-width: var(--tal-axis-width);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* A section heading with a rule under it and a link on the far right. */
+.tal-section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1.2rem 2.4rem;
+    padding-bottom: 1.8rem;
+    margin-bottom: 4.4rem;
+    border-bottom: 2px solid var(--ghost-accent-color);
+}
+
+.tal-section-title {
+    margin: 0;
+    font-size: 2.2rem;
+    line-height: 1.2;
+    letter-spacing: 0.01em;
+}
+
+.tal-eyebrow,
+.tal-kicker {
+    margin: 0 0 2.2rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+/* Section labels carry the gold. They are small and uppercase, so the colour
+   reads as a marker rather than as text with a tint. */
+.tal-eyebrow {
+    color: #9a7c39;
+}
+
+.tal-kicker {
+    color: #9a7c39;
+}
+
+/* The thin gold rule that separates one section from the next. It replaces the
+   heavier accent rule that used to sit here: a hairline the full width, with a
+   short thicker tick at the left edge so the line reads as deliberate rather
+   than as a border. The tick is absolutely positioned, so it takes no part in
+   the flex layout above it. */
+.tal-section-head {
+    position: relative;
+    border-bottom-width: 1px;
+    border-bottom-color: var(--tal-gold-soft);
+}
+
+.tal-section-head::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 6.4rem;
+    height: 3px;
+    background-color: var(--tal-gold);
+}
+
+/* --------------------------------------------------------------------------
+   4. Front page — masthead and board card
+   -------------------------------------------------------------------------- */
+
+.tal-masthead {
+    position: relative;
+    overflow: hidden;
+    padding: 7.5rem 0 8.5rem;
+    background-color: var(--tal-wash);
+    border-bottom: 1px solid var(--tal-rule);
+}
+
+/* A faint column rule behind the masthead — the same device a newspaper page
+   uses to set its measure. Decorative only, so it is hidden from assistive
+   technology by being a pseudo-element, and it fades out before it reaches
+   the text on the right. */
+.tal-masthead::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: linear-gradient(to right, var(--tal-rule) 1px, transparent 1px);
+    background-size: 7.2rem 100%;
+    opacity: 0.55;
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 35%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, #000 35%, transparent);
+}
+
+.tal-masthead-inner {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.25fr 0.85fr;
+    gap: 6rem;
+    align-items: center;
+}
+
+.tal-masthead-title {
+    margin: 0;
+    font-size: clamp(3.6rem, 5vw, 6rem);
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+}
+
+/* --------------------------------------------------------------------------
+   4a. The wordmark
+
+   Set in live type rather than placed as an image, so it stays sharp at any
+   size, can be selected and read aloud, and recolours itself when the
+   masthead is running over a photograph.
+   -------------------------------------------------------------------------- */
+
+.tal-wordmark {
+    font-size: clamp(4rem, 6.4vw, 7.6rem);
+    letter-spacing: -0.02em;
+    line-height: 1;
+}
+
+/* What a screen reader announces. The three coloured fragments below are
+   hidden from it, so the name is not read out in pieces. */
+.tal-wm-vh {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.tal-wm {
+    display: block;
+}
+
+/* "The" — small, light, sitting above the name and inset from its left edge
+   so the A still starts the line and the eye lands on "Advisory". */
+.tal-wm-the {
+    display: block;
+    margin: 0 0 -0.10em 0.30em;
+    font-size: 0.34em;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.005em;
+    color: #a9a9a9;
+}
+
+.tal-wm-name {
+    display: block;
+    font-weight: 700;
+    color: var(--ghost-accent-color);
+}
+
+/* The A carries the rule beneath it — the same mark as the site icon, reduced
+   to the part of it that survives at wordmark size. The rule is drawn as a
+   border on an inline-block rather than as an underline so its weight and
+   colour are ours rather than the font's. */
+.tal-wm-a {
+    display: inline-block;
+    border-bottom: 0.055em solid var(--tal-gold);
+    padding-bottom: 0.04em;
+    margin-right: 0.005em;
+}
+
+.tal-wm-letter {
+    color: #9c9c9c;
+    font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   4b. The masthead over a photograph
+
+   The picture is a custom property so a feature image set in Ghost can
+   override the drawn stand-in without touching this file. Two layers sit on
+   top of it: a navy gradient that is near-solid on the left, under the words,
+   and thins towards the right so the building stays visible behind the board
+   card; and a flat navy floor underneath, so nothing shows through while the
+   image is still loading.
+   -------------------------------------------------------------------------- */
+
+.tal-masthead.has-hero-image {
+    background-color: var(--tal-hero-ink);
+    background-image:
+        linear-gradient(
+            100deg,
+            rgba(18, 40, 63, 0.97) 0%,
+            rgba(18, 40, 63, 0.93) 34%,
+            rgba(18, 40, 63, 0.74) 62%,
+            rgba(18, 40, 63, 0.58) 100%
+        ),
+        var(--tal-hero-image);
+    background-repeat: no-repeat, no-repeat;
+
+    /* The wash covers; the picture does not. Sizing the picture rather than
+       letting it cover is what keeps the building on the right-hand side and
+       leaves the left as clean ground for the words — and it means a
+       photograph dropped in from Ghost lands in the same place rather than
+       being centred and cropped to whatever its own proportions dictate. */
+    background-size: cover, auto 84%;
+    background-position: center, 58% bottom;
+    border-bottom: 0;
+}
+
+/* A photograph is darker than the drawn stand-in, so when a real one is set
+   it covers the band and the wash does the work of holding it back. */
+.tal-masthead.has-hero-image[style] {
+    background-size: cover, cover;
+    background-position: center, center 34%;
+}
+
+/* The faint column rule is a light-background device. Over a photograph it
+   reads as a printing fault, so it goes. */
+.tal-masthead.has-hero-image::before {
+    display: none;
+}
+
+.tal-masthead.has-hero-image .tal-eyebrow {
+    color: var(--tal-gold);
+}
+
+.tal-masthead.has-hero-image .tal-masthead-standfirst {
+    color: rgba(255, 255, 255, 0.82);
+}
+
+/* Hugh's wordmark colours — navy on grey — are written for a light page. Over
+   the navy wash they would disappear, so the same three-part structure is kept
+   and the values are lifted: white where the navy was, and two steps of warm
+   grey where the greys were. The gold rule under the A is unchanged, and is
+   the one thing that carries across both settings. */
+.tal-masthead.has-hero-image .tal-wm-the {
+    color: rgba(255, 255, 255, 0.58);
+}
+
+.tal-masthead.has-hero-image .tal-wm-name {
+    color: #fff;
+}
+
+.tal-masthead.has-hero-image .tal-wm-letter {
+    color: rgba(255, 255, 255, 0.66);
+}
+
+.tal-masthead.has-hero-image .tal-link-arrow {
+    color: #fff;
+}
+
+.tal-masthead.has-hero-image .tal-link-arrow:hover {
+    color: var(--tal-gold);
+}
+
+/* The primary button was navy on a pale wash. On the navy it inverts. */
+.tal-masthead.has-hero-image .tal-button {
+    background-color: #fff;
+    border-color: #fff;
+    color: var(--ghost-accent-color);
+}
+
+.tal-masthead.has-hero-image .tal-button:hover {
+    background-color: var(--tal-gold);
+    border-color: var(--tal-gold);
+    color: #16223a;
+}
+
+/* The board card keeps its white ground, which is what lets it hold its own
+   against the picture, but the shadow deepens so it sits on the image rather
+   than floating above nothing. */
+.tal-masthead.has-hero-image .tal-boardcard {
+    box-shadow: 0 32px 60px -30px rgba(0, 0, 0, 0.75);
+}
+
+.tal-masthead-standfirst {
+    margin: 2.4rem 0 0;
+    max-width: 46rem;
+    font-size: 2.1rem;
+    line-height: 1.5;
+    color: var(--tal-muted);
+}
+
+.tal-masthead-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.6rem 3.2rem;
+    margin: 4.2rem 0 0;
+}
+
+.tal-boardcard {
+    padding: 2.6rem 2.8rem 2.2rem;
+    background-color: #fff;
+    border: 1px solid var(--tal-rule);
+    border-radius: 8px;
+    box-shadow: 0 22px 44px -28px var(--tal-shadow);
+}
+
+.tal-boardcard-head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-bottom: 1.6rem;
+    color: var(--ghost-accent-color);
+    border-bottom: 1px solid var(--tal-rule);
+}
+
+.tal-boardcard-mark {
+    flex: none;
+    width: 2rem;
+    height: 2rem;
+}
+
+.tal-boardcard-label {
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.tal-boardlist {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.tal-boardlist-item {
+    display: block;
+    padding: 0;
+}
+
+.tal-boardlist-item + .tal-boardlist-item {
+    border-top: 1px solid var(--tal-rule);
+}
+
+/* The row is a separate element from the list item because it is an anchor
+   when the boards come from tags and a span when they are the built-in
+   fallback. Both need the same geometry; only the anchor needs the hover. */
+.tal-boardlist-row {
+    display: flex;
+    align-items: center;
+    gap: 1.4rem;
+    padding: 1.5rem 0;
+    color: inherit;
+    text-decoration: none;
+    box-shadow: none;
+}
+
+a.tal-boardlist-row:hover {
+    opacity: 1;
+}
+
+a.tal-boardlist-row:hover .tal-boardlist-name {
+    color: inherit;
+}
+
+.tal-monogram {
+    flex: none;
+    min-width: 6.4rem;
+    padding: 0.7rem 0.6rem;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.05em;
+    color: #fff;
+    background-color: var(--ghost-accent-color);
+    border-radius: 3px;
+}
+
+.tal-boardlist-name {
+    font-size: 1.5rem;
+    line-height: 1.35;
+    color: var(--tal-muted);
+}
+
+.tal-boardcard-foot {
+    padding-top: 1.8rem;
+    border-top: 1px solid var(--tal-rule);
+}
+
+/* --------------------------------------------------------------------------
+   5. Front page — statement
+   The one part of the front page written in Ghost, on the page slugged "home".
+   -------------------------------------------------------------------------- */
+
+.tal-statement {
+    padding: 9rem 0 8rem;
+}
+
+/* A label rail on the left, the editable words on the right — both sitting on
+   the same vertical axis as every other band on the page. */
+.tal-statement-inner {
+    display: grid;
+    grid-template-columns: 16rem minmax(0, 1fr);
+    gap: 0 var(--grid-gap, 42px);
+    align-items: start;
+}
+
+.tal-statement-rail {
+    padding-top: 1.1rem;
+    border-top: 2px solid var(--tal-gold);
+}
+
+.tal-statement-rail .tal-kicker {
+    margin: 0;
+}
+
+/* gh-canvas normally centres a fixed-width column inside itself. Here it is
+   already sitting in its own column, so let it fill the space instead. */
+.tal-statement-content {
+    --content-width: 100%;
+    --container-gap: 0px;
+    max-width: 88rem;
+    font-size: 2.1rem;
+    line-height: 1.62;
+}
+
+.tal-statement-content > p:first-child,
+.tal-statement-content > h2:first-child {
+    margin-top: 0;
+}
+
+.tal-statement-content > *:last-child {
+    margin-bottom: 0;
+}
+
+/* Anything the publisher marks as an aside reads as a note, not as body copy. */
+.tal-statement-content em {
+    color: var(--tal-muted);
+}
+
+/* --------------------------------------------------------------------------
+   6. Front page — latest reporting
+   -------------------------------------------------------------------------- */
+
+.tal-latest {
+    padding-top: 1rem;
+}
+
+/* The newest article, on its own.
+
+   No card, no border box, no shadow. A thin gold rule down the left edge is
+   the only thing marking it as a clickable object — which is enough, because
+   it is the only object in the band. The rule thickens slightly on hover so
+   the target confirms itself without anything moving. */
+.tal-newest {
+    max-width: 78rem;
+}
+
+.tal-newest-link {
+    display: block;
+    padding: 0.4rem 0 0.6rem 2.8rem;
+    border-left: 3px solid var(--tal-gold);
+    text-decoration: none;
+    transition: border-color 0.2s ease, border-left-width 0.2s ease;
+}
+
+.tal-newest-link:hover {
+    border-left-color: #b08e40;
+}
+
+.tal-newest-date {
+    display: block;
+    margin: 0 0 1.1rem;
+    font-size: 1.35rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(0, 0, 0, 0.42);
+}
+
+.tal-newest-title {
+    margin: 0;
+    font-size: clamp(2.6rem, 3.2vw, 3.8rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--ghost-accent-color);
+    transition: color 0.2s ease;
+}
+
+.tal-newest-link:hover .tal-newest-title {
+    color: #16283a;
+}
+
+.tal-newest-excerpt {
+    margin: 1.6rem 0 0;
+    max-width: 62rem;
+    font-size: 1.8rem;
+    line-height: 1.55;
+    color: var(--tal-muted);
+
+    /* One line of excerpt, as asked — and genuinely one line, whatever the
+       length of the sentence Ghost hands over. */
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.tal-latest-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    column-gap: var(--grid-gap, 42px);
+}
+
+.tal-lead {
+    grid-column: 1;
+    grid-row: 1 / span 3;
+}
+
+/* Before anything is published there is only the one post. Rather than leave
+   half the row empty, it becomes a single wide feature: headline on the left,
+   standfirst on the right, both on the same baseline. */
+.tal-lead:only-child {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    max-width: none;
+}
+
+.tal-lead:only-child .tal-lead-link {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    grid-template-rows: auto auto auto;
+    column-gap: calc(var(--grid-gap, 42px) * 1.4);
+    align-items: start;
+}
+
+.tal-lead:only-child .tal-meta {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.tal-lead:only-child .tal-lead-title {
+    grid-column: 1;
+    grid-row: 2;
+    font-size: clamp(3rem, 3.4vw, 4.2rem);
+}
+
+.tal-lead:only-child .tal-lead-excerpt {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    max-width: none;
+    margin-top: 0.4rem;
+    padding-left: calc(var(--grid-gap, 42px) * 0.8);
+    border-left: 1px solid var(--tal-rule);
+}
+
+.tal-lead:only-child .tal-link-arrow {
+    grid-column: 1;
+    grid-row: 3;
+}
+
+.tal-lead-link,
+.tal-item-link {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+    box-shadow: none;
+}
+
+.tal-lead-link:hover,
+.tal-item-link:hover {
+    opacity: 1;
+}
+
+.tal-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 0 0 1.2rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--tal-muted);
+}
+
+.tal-meta-tag {
+    color: var(--ghost-accent-color);
+}
+
+.tal-lead-title {
+    margin: 0;
+    font-size: clamp(2.6rem, 3vw, 3.6rem);
+    line-height: 1.15;
+    letter-spacing: -0.018em;
+    transition: color 0.18s ease;
+}
+
+.tal-lead-link:hover .tal-lead-title,
+.tal-item-link:hover .tal-item-title {
+    color: var(--ghost-accent-color);
+}
+
+.tal-lead-excerpt {
+    margin: 1.8rem 0 0;
+    max-width: 62rem;
+    font-size: 1.75rem;
+    line-height: 1.6;
+    color: var(--tal-muted);
+}
+
+.tal-lead .tal-link-arrow {
+    margin-top: 2.4rem;
+}
+
+.tal-item {
+    grid-column: 2;
+    padding-bottom: 2.2rem;
+}
+
+.tal-item + .tal-item {
+    padding-top: 2.2rem;
+    border-top: 1px solid var(--tal-rule);
+}
+
+.tal-item .tal-meta {
+    margin-bottom: 0.9rem;
+}
+
+.tal-item-title {
+    margin: 0;
+    font-size: 1.85rem;
+    line-height: 1.32;
+    letter-spacing: -0.01em;
+    transition: color 0.18s ease;
+}
+
+/* --------------------------------------------------------------------------
+   7. Front page — the record
+   -------------------------------------------------------------------------- */
+
+.tal-data {
+    background-color: var(--tal-wash-soft);
+    border-top: 1px solid var(--tal-rule);
+    border-bottom: 1px solid var(--tal-rule);
+}
+
+.tal-data-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2.4rem;
+}
+
+.tal-data-card {
+    display: block;
+    padding: 2.8rem 2.6rem 3rem;
+    color: inherit;
+    text-decoration: none;
+    box-shadow: none;
+    background-color: #fff;
+    border: 1px solid var(--tal-rule);
+    border-radius: 8px;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.tal-data-card:hover {
+    opacity: 1;
+    transform: translateY(-3px);
+    border-color: var(--ghost-accent-color);
+    box-shadow: 0 18px 34px -24px var(--tal-shadow);
+}
+
+/* The icon sits inside a tinted chip rather than floating on the card. Padding
+   on a bare inline SVG is unreliable, hence the wrapping span. */
+.tal-data-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 5.2rem;
+    height: 5.2rem;
+    margin-bottom: 2.2rem;
+    border-radius: 10px;
+    background-color: var(--tal-wash);
+    color: var(--ghost-accent-color);
+    transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.tal-data-card:hover .tal-data-chip {
+    background-color: var(--ghost-accent-color);
+    color: #fff;
+}
+
+.tal-data-icon {
+    display: block;
+    width: 2.6rem;
+    height: 2.6rem;
+    color: inherit;
+}
+
+/* A record page with its own feature image uses it in place of the drawn
+   mark. It fills the chip rather than sitting inside it, because a photograph
+   floating in a tinted square with padding looks like a mistake. */
+.tal-data-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    object-fit: cover;
+}
+
+.tal-data-chip:has(.tal-data-image) {
+    background-color: transparent;
+}
+
+.tal-data-card:hover .tal-data-chip:has(.tal-data-image) {
+    background-color: transparent;
+}
+
+/* The row is built for four cards. If a fifth or sixth record page is added,
+   four across leaves one or two stranded on a second row, so drop to three —
+   which divides both 5 (3+2) and 6 (3+3) far more evenly. Seven or more goes
+   back to four. */
+.tal-data-grid:has(> :nth-child(5)):not(:has(> :nth-child(7))) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.tal-data-title {
+    margin: 0 0 1rem;
+    font-size: 1.8rem;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+}
+
+.tal-data-text {
+    margin: 0;
+    font-size: 1.5rem;
+    line-height: 1.55;
+    color: var(--tal-muted);
+}
+
+/* --------------------------------------------------------------------------
+   8. Front page — call to action
+   -------------------------------------------------------------------------- */
+
+.tal-cta {
+    position: relative;
+    overflow: hidden;
+    padding: 10.5rem 0;
+    background-color: var(--ghost-accent-color);
+    color: #fff;
+}
+
+/* The record-sheet mark, blown up and faded, sitting behind the words. Barely
+   there on purpose: at this size it should register as texture on a second
+   look rather than as a picture on the first. */
+.tal-cta-watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 32rem;
+    height: 40rem;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    opacity: 0.09;
+    pointer-events: none;
+}
+
+.tal-cta-inner {
+    position: relative;
+    max-width: 76rem;
+    text-align: center;
+}
+
+.tal-cta-title {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(2.8rem, 3.4vw, 4.2rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+}
+
+.tal-cta-text {
+    margin: 2rem auto 0;
+    max-width: 60rem;
+    font-size: 1.75rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.82);
+}
+
+.tal-cta .tal-button {
+    margin-top: 3.6rem;
+}
+
+/* --------------------------------------------------------------------------
+   9. Buttons and arrow links
+   -------------------------------------------------------------------------- */
+
+.tal-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.7rem;
+    padding: 1.5rem 3rem;
+    font-size: 1.6rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    color: #fff;
+    background-color: var(--ghost-accent-color);
+    border: 1px solid var(--ghost-accent-color);
+    border-radius: 100px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.14);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.tal-button:hover {
+    opacity: 1;
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px -10px var(--tal-shadow);
+}
+
+.tal-button.is-inverse {
+    color: var(--ghost-accent-color);
+    background-color: #fff;
+    border-color: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.tal-button.is-inverse:hover {
+    color: var(--ghost-accent-color);
+    box-shadow: 0 12px 26px -12px rgba(0, 0, 0, 0.5);
+}
+
+.tal-button svg,
+.tal-link-arrow svg {
+    flex: none;
+    width: 1.4rem;
+    height: 1.4rem;
+    fill: currentColor;
+}
+
+.tal-link-arrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--ghost-accent-color);
+    text-decoration: none;
+    box-shadow: none;
+}
+
+.tal-link-arrow.is-small {
+    font-size: 1.35rem;
+}
+
+.tal-link-arrow svg {
+    transition: transform 0.18s ease;
+}
+
+.tal-link-arrow:hover {
+    opacity: 1;
+}
+
+.tal-link-arrow:hover svg,
+.tal-lead-link:hover .tal-link-arrow svg,
+.tal-data-card:hover .tal-link-arrow svg {
+    transform: translateX(3px);
+}
+
+/* --------------------------------------------------------------------------
+   10. Article index and simple page headers
+   -------------------------------------------------------------------------- */
+
+/* The article list keeps Source's .gh-container class so its card styles still
+   apply, but the 16-column grid that class normally sets up is replaced by the
+   axis in articles.hbs. Neutralising the grid here is what lets the list start
+   on the same left edge as the site header rather than 250px inside it. */
+.tal-articles.gh-container,
+.tal-articles .gh-container-inner {
+    display: block;
+    margin-top: 0;
+    max-width: none;
+    padding: 0;
+}
+
+.tal-articles .gh-feed {
+    display: block;
+    grid-column: auto;
+    max-width: none;
+}
+
+.tal-empty {
+    color: var(--tal-muted);
+    padding: 4rem 0;
+}
+
+/* Pagination for the article index. Source ships no styles for Ghost's
+   built-in {{pagination}} helper, so the markup is written out in
+   articles.hbs and styled here. It only appears past the first page. */
+.tal-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-top: 6rem;
+    padding-top: 2.4rem;
+    border-top: 1px solid var(--tal-rule);
+}
+
+.tal-page-link {
+    font-size: 1.45rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--ghost-accent-color);
+    text-decoration: none;
+    box-shadow: none;
+    white-space: nowrap;
+}
+
+.tal-page-link:hover {
+    opacity: 0.75;
+}
+
+.tal-page-link.is-disabled {
+    color: var(--tal-muted);
+    opacity: 0.35;
+    pointer-events: none;
+}
+
+.tal-page-count {
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--tal-muted);
+    text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   10b. Error pages
+   -------------------------------------------------------------------------- */
+
+/* The error page is the masthead band on its own, given more room top and
+   bottom because there is nothing under it. */
+.tal-error-band {
+    margin-bottom: 0;
+    padding: 12vmin 0 13vmin;
+}
+
+.tal-error-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.6rem 2.8rem;
+    margin-top: 3.6rem;
+}
+
+/* --------------------------------------------------------------------------
+   10c. Pages and posts — masthead band and reading column
+
+   Source opens a page with a bare title on a white field. These rules give
+   every page and article the same tinted masthead the front page uses, then
+   hand the body copy back to one quiet reading column.
+   -------------------------------------------------------------------------- */
+
+/* -- The masthead band ----------------------------------------------------- */
+
+/* Every inner page opens with the same band: full width, tinted, with the
+   title sitting on the axis. It is the piece that makes an article, a page and
+   the article index read as parts of one publication. */
+.tal-masthead-band {
+    position: relative;
+    width: 100%;
+    margin: 0 0 6.4rem;
+    padding: 7rem 0 6rem;
+    background-color: var(--tal-wash-soft);
+    border-bottom: 1px solid var(--tal-rule);
+    overflow: hidden;
+}
+
+/* The same faint column rule the front-page masthead uses, a shade quieter so
+   an inner page never competes with the front page. Decorative only, which is
+   why it is a pseudo-element and carries no text. */
+.tal-masthead-band::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: linear-gradient(to right, var(--tal-rule) 1px, transparent 1px);
+    background-size: 7.2rem 100%;
+    opacity: 0.4;
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 40%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, #000 40%, transparent);
+}
+
+.tal-masthead-band > .tal-axis {
+    position: relative;
+}
+
+/* When a feature image follows, the band grows a deeper foot so the image can
+   be hung over its lower edge instead of sitting under it. */
+.tal-masthead-band.has-feature {
+    margin-bottom: 0;
+    padding-bottom: 12rem;
+}
+
+.tal-masthead-band.has-feature + .tal-axis {
+    margin-bottom: 6.4rem;
+}
+
+/* -- Breadcrumbs ----------------------------------------------------------- */
+
+/* Wayfinding, and the accent mark that used to float above the title on its
+   own. One element now does both jobs. */
+.tal-crumbs {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    margin-bottom: 2.4rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--tal-muted);
+}
+
+.tal-crumbs::before {
+    content: "";
+    flex: none;
+    width: 2.4rem;
+    height: 3px;
+    margin-right: 0.5rem;
+    background-color: var(--ghost-accent-color);
+}
+
+.tal-crumbs a {
+    color: inherit;
+    text-decoration: none;
+    box-shadow: none;
+}
+
+.tal-crumbs a:hover {
+    color: var(--ghost-accent-color);
+}
+
+.tal-crumbs-sep {
+    opacity: 0.4;
+    font-weight: 400;
+}
+
+.tal-crumbs-current {
+    color: var(--ghost-accent-color);
+}
+
+/* -- Title, standfirst, byline --------------------------------------------- */
+
+.tal-masthead-band .tal-masthead-title {
+    margin: 0;
+    max-width: 20ch;
+    font-size: clamp(3.4rem, 1.9rem + 3vw, 5.4rem);
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+}
+
+.tal-index .tal-masthead-title,
+.tal-error-band .tal-masthead-title {
+    max-width: none;
+}
+
+.tal-masthead-standfirst {
+    margin: 2.2rem 0 0;
+    max-width: var(--tal-max-measure);
+    font-size: 2rem;
+    line-height: 1.55;
+    color: var(--tal-muted);
+}
+
+.tal-byline {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    margin-top: 3.2rem;
+    padding-top: 2.4rem;
+    border-top: 1px solid var(--tal-rule);
+    font-size: 1.4rem;
+    line-height: 1.4;
+    color: var(--tal-muted);
+}
+
+.tal-byline-faces {
+    display: flex;
+    align-items: center;
+    margin-right: 0.4rem;
+}
+
+.tal-byline-faces a {
+    display: block;
+    box-shadow: none;
+}
+
+.tal-byline-faces a + a {
+    margin-left: -0.8rem;
+}
+
+.tal-byline-faces img,
+.tal-byline-faces svg {
+    display: block;
+    width: 3.2rem;
+    height: 3.2rem;
+    border-radius: 100%;
+    border: 2px solid var(--tal-wash-soft);
+    object-fit: cover;
+    background-color: var(--tal-wash);
+}
+
+.tal-byline-name {
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.82);
+}
+
+.tal-byline-sep {
+    opacity: 0.4;
+}
+
+/* -- The feature image, hung over the band's lower edge --------------------- */
+
+/* The one deliberate piece of visual furniture on an inner page. The image
+   overlaps the band above it, which gives the top of the page a horizon
+   instead of a stack of rectangles. */
+.tal-feature {
+    position: relative;
+    margin: -8rem 0 0;
+}
+
+.tal-feature img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 62rem;
+    object-fit: cover;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06), 0 26px 60px -34px var(--tal-shadow);
+}
+
+.tal-feature figcaption {
+    margin-top: 1.4rem;
+    font-size: 1.35rem;
+    line-height: 1.5;
+    color: var(--tal-muted);
+}
+
+/* -- The body: one reading column, one sticky rail -------------------------- */
+
+.tal-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--tal-rail-width);
+    column-gap: var(--tal-gutter);
+    align-items: start;
+    padding-bottom: 9rem;
+}
+
+.tal-body-main {
+    min-width: 0;
+}
+
+/* Source's .gh-canvas is a symmetric grid: it always centres the reading
+   column inside whatever space it is given, which is exactly what pushed body
+   copy 300px off the site's left edge. This re-declares it asymmetrically —
+   text flush left at the reading measure, everything left over on the right so
+   wide and full-width images can still break out.
+
+   --container-width: 100% is load-bearing. A nested
+   .kg-width-full.kg-content-wide recomputes its own tracks from that value; if
+   it were left at Source's 1120px it would overflow this column. */
+.tal-body .gh-content.gh-canvas {
+    --container-width: 100%;
+    grid-template-columns:
+        [full-start wide-start main-start] minmax(0, var(--tal-measure))
+        [main-end] minmax(0, 1fr) [wide-end full-end];
+}
+
+.tal-rail {
+    position: sticky;
+    top: 9.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.4rem;
+    min-width: 0;
+}
+
+.tal-rail:empty,
+.tal-rail-slot:empty {
+    display: none;
+}
+
+.tal-rail-card {
+    padding: 2.2rem 2.4rem;
+    background-color: var(--tal-wash-soft);
+    border: 1px solid var(--tal-rule);
+    border-radius: 5px;
+}
+
+.tal-rail-label {
+    margin: 0 0 1.4rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--tal-muted);
+}
+
+.tal-rail-note {
+    margin: 0;
+    font-size: 1.4rem;
+    line-height: 1.55;
+    color: var(--tal-muted);
+}
+
+.tal-rail-note + .tal-link-arrow {
+    margin-top: 1.6rem;
+}
+
+.tal-rail-line {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1.6rem;
+    padding: 0.8rem 0;
+    font-size: 1.4rem;
+    line-height: 1.4;
+}
+
+.tal-rail-line + .tal-rail-line {
+    border-top: 1px solid var(--tal-rule);
+}
+
+.tal-rail-key {
+    color: var(--tal-muted);
+}
+
+.tal-rail-value {
+    font-weight: 600;
+    text-align: right;
+}
+
+/* -- Share links ----------------------------------------------------------- */
+
+.tal-share {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-top: 1.8rem;
+    padding-top: 1.8rem;
+    border-top: 1px solid var(--tal-rule);
+}
+
+.tal-rail-note + .tal-share {
+    margin-top: 1.8rem;
+}
+
+/* Used where the row may turn out to have nothing in it — an author with no
+   social accounts. Carrying its spacing on the children instead of on itself
+   means an empty row leaves no trace. */
+.tal-share.is-loose {
+    flex-wrap: wrap;
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+}
+
+.tal-share.is-loose > .tal-share-link {
+    margin-top: 1.8rem;
+}
+
+.tal-rail-portrait {
+    display: block;
+    width: 6.4rem;
+    height: 6.4rem;
+    margin-bottom: 1.8rem;
+    border-radius: 100%;
+    object-fit: cover;
+}
+
+.tal-share-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.6rem;
+    height: 3.6rem;
+    border-radius: 100%;
+    color: var(--tal-muted);
+    background-color: #fff;
+    border: 1px solid var(--tal-rule);
+    box-shadow: none;
+    transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.tal-share-link:hover {
+    opacity: 1;
+    color: var(--ghost-accent-color);
+    border-color: var(--ghost-accent-color);
+}
+
+.tal-share-link svg {
+    width: 1.6rem;
+    height: 1.6rem;
+    fill: currentColor;
+}
+
+/* The mail icon is drawn with strokes rather than a fill, so it must not be
+   filled the way the social marks are. */
+.tal-share-link svg[stroke],
+.tal-share-link svg rect,
+.tal-share-link svg path[stroke] {
+    fill: none;
+}
+
+/* -- Topic list in the rail on /articles/ ---------------------------------- */
+
+.tal-topics {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.tal-topics li + li {
+    border-top: 1px solid var(--tal-rule);
+}
+
+.tal-topics a {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1.2rem;
+    padding: 0.8rem 0;
+    font-size: 1.45rem;
+    line-height: 1.4;
+    text-decoration: none;
+    box-shadow: none;
+}
+
+.tal-topics a:hover {
+    opacity: 1;
+    color: var(--ghost-accent-color);
+}
+
+.tal-topics-count {
+    flex: none;
+    font-size: 1.15rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--tal-muted);
+}
+
+/* -- Comments -------------------------------------------------------------- */
+
+.tal-comments {
+    margin-top: 6rem;
+    padding-top: 4rem;
+    border-top: 1px solid var(--tal-rule);
+}
+
+/* -- Read more, at the foot of an article ---------------------------------- */
+
+/* Left on the page background rather than tinted. The subscription panel
+   directly below it is the tinted band, and two washed bands stacked on top of
+   each other read as one undifferentiated block. */
+.tal-more {
+    border-top: 1px solid var(--tal-rule);
+}
+
+.tal-more-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 3.2rem;
+}
+
+.tal-more-item {
+    min-width: 0;
+}
+
+.tal-more-item + .tal-more-item {
+    border-left: 1px solid var(--tal-rule);
+    padding-left: 3.2rem;
+}
+
+.tal-more-link {
+    display: block;
+    text-decoration: none;
+    box-shadow: none;
+}
+
+.tal-more-title {
+    margin: 0;
+    font-size: 1.95rem;
+    line-height: 1.28;
+    letter-spacing: -0.012em;
+    transition: color 0.15s ease;
+}
+
+.tal-more-link:hover {
+    opacity: 1;
+}
+
+.tal-more-link:hover .tal-more-title {
+    color: var(--ghost-accent-color);
+}
+
+/* -- The reading column --------------------------------------------------- */
+
+/* The opening paragraph carries a little more weight than the rest. Matched on
+   :first-child rather than :first-of-type so a page that opens on a heading
+   does not get a stray oversized paragraph part-way down. */
+.gh-content.tal-prose > p:first-child {
+    font-size: 2rem;
+    line-height: 1.62;
+}
+
+/* Section headings get a hairline above them, so a long page reads as a set of
+   parts rather than one unbroken run of text. */
+.gh-content.tal-prose > h2 {
+    font-size: 2.9rem;
+    line-height: 1.22;
+    letter-spacing: -0.018em;
+}
+
+.gh-content.tal-prose > h2:not(:first-child) {
+    margin-top: 6.4rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--tal-rule);
+}
+
+/* The contents box already draws its own edge, so the heading directly under
+   it does not need a second rule. */
+.gh-content.tal-prose > .tal-jump + h2 {
+    margin-top: 4rem;
+    padding-top: 0;
+    border-top: 0;
+}
+
+.gh-content.tal-prose > h3 {
+    font-size: 2.05rem;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+}
+
+/* Links in body copy are underlined rather than coloured only, so they stay
+   obvious to a reader who cannot separate the accent from black text. These
+   are scoped through a block element so the contents box keeps its own look. */
+.tal-prose > p a,
+.tal-prose > ul a,
+.tal-prose > ol a,
+.tal-prose > blockquote a,
+.tal-prose > table a {
+    color: var(--ghost-accent-color);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+    box-shadow: none;
+    transition: opacity 0.15s ease;
+}
+
+.tal-prose > p a:hover,
+.tal-prose > ul a:hover,
+.tal-prose > ol a:hover,
+.tal-prose > blockquote a:hover,
+.tal-prose > table a:hover {
+    opacity: 0.7;
+}
+
+/* Direct-child selectors throughout: a plain ".tal-prose ol" would out-rank
+   ".tal-jump ol" and flatten the contents box. */
+.gh-content.tal-prose > ul,
+.gh-content.tal-prose > ol {
+    padding-left: 2.6rem;
+}
+
+.tal-prose > ul > li,
+.tal-prose > ol > li {
+    padding-left: 0.5rem;
+}
+
+.tal-prose > ul > li + li,
+.tal-prose > ol > li + li {
+    margin-top: 1.1rem;
+}
+
+.tal-prose > ul > li::marker,
+.tal-prose > ol > li::marker {
+    color: var(--ghost-accent-color);
+    font-weight: 700;
+}
+
+/* A divider is a pause in the argument, not a piece of furniture. */
+.gh-content.tal-prose > hr {
+    width: 100%;
+    max-width: 12rem;
+    height: 1px;
+    border: 0;
+    background-color: var(--tal-rule);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Tables read as reference material: a rule under the accent-marked header
+   row, hairlines between rows, nothing else. */
+.tal-prose table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1.55rem;
+    line-height: 1.5;
+}
+
+.tal-prose table th {
+    text-align: left;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--tal-muted);
+    border-bottom: 2px solid var(--ghost-accent-color);
+    padding: 0.9rem 1.4rem 0.9rem 0;
+}
+
+.tal-prose table td {
+    border-bottom: 1px solid var(--tal-rule);
+    padding: 1.1rem 1.4rem 1.1rem 0;
+    vertical-align: top;
+}
+
+/* --------------------------------------------------------------------------
+   11. Jump-to-section list on long pages (Resources, Data)
+   -------------------------------------------------------------------------- */
+
+/* Two settings. In the rail it is a quiet card like the ones beside it; in the
+   content flow — the fallback when there is no rail, and on a phone — it keeps
+   the boxed look it had before. */
+.tal-jump {
+    margin: 0 0 5.4rem;
+    padding: 2.6rem 3rem 2.4rem;
+    background-color: #fff;
+    border: 1px solid var(--tal-rule);
+    border-left: 3px solid var(--ghost-accent-color);
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 14px 30px -22px var(--tal-shadow);
+}
+
+.tal-rail .tal-jump {
+    margin: 0;
+    padding: 2.2rem 2.4rem;
+    background-color: var(--tal-wash-soft);
+    border-left-width: 1px;
+    border-left-color: var(--tal-rule);
+    border-radius: 5px;
+    box-shadow: none;
+}
+
+.tal-rail .tal-jump li {
+    padding: 0.6rem 0;
+    font-size: 1.45rem;
+}
+
+/* The section the reader is actually looking at is marked in the rail. tal.js
+   sets this as the page scrolls. */
+.tal-rail .tal-jump a.is-current {
+    color: var(--ghost-accent-color);
+    font-weight: 600;
+}
+
+.tal-jump-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--tal-muted);
+    margin: 0 0 1.4rem;
+}
+
+.tal-jump ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    counter-reset: tal-jump;
+}
+
+.tal-jump li {
+    counter-increment: tal-jump;
+    display: flex;
+    align-items: baseline;
+    gap: 1.4rem;
+    margin: 0;
+    padding: 0.7rem 0;
+    font-size: 1.6rem;
+    line-height: 1.4;
+}
+
+/* Numbered by CSS rather than by the browser's own list marker, so the figure
+   can take the accent colour and stay aligned with the text beside it. */
+.tal-jump li::before {
+    content: counter(tal-jump, decimal-leading-zero);
+    flex: none;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+    color: var(--ghost-accent-color);
+}
+
+.tal-jump li + li {
+    border-top: 1px solid var(--tal-rule);
+}
+
+.tal-jump a {
+    text-decoration: none;
+    box-shadow: none;
+}
+
+.tal-jump a:hover {
+    color: var(--ghost-accent-color);
+}
+
+/* --------------------------------------------------------------------------
+   12. Disclaimers and standing notices
+   -------------------------------------------------------------------------- */
+
+.gh-content blockquote:not(.kg-blockquote-alt) {
+    font-style: normal;
+    font-size: 1.6rem;
+    line-height: 1.65;
+    color: var(--tal-muted);
+    background-color: var(--tal-note-bg);
+    border-left: 3px solid var(--ghost-accent-color);
+    padding: 2.2rem 2.6rem;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+/* --------------------------------------------------------------------------
+   13. Google Form placeholder
+   -------------------------------------------------------------------------- */
+
+.tal-form-placeholder {
+    padding: 4rem 3rem;
+    text-align: center;
+    color: var(--tal-muted);
+    background-color: var(--tal-note-bg);
+    border: 2px dashed var(--tal-rule);
+    border-radius: 5px;
+}
+
+.tal-form-placeholder p {
+    margin: 0 0 1rem;
+    font-size: 1.6rem;
+}
+
+.tal-form-placeholder p:last-child {
+    margin-bottom: 0;
+}
+
+/* Embedded Google Forms fill the column and lose their frame. */
+.gh-content iframe[src*="docs.google.com/forms"] {
+    width: 100%;
+    min-height: 1200px;
+    border: 0;
+}
+
+/* --------------------------------------------------------------------------
+   13b. The subscription panel
+
+   Ghost ships one grey pill and no reason to type into it. This gives the ask
+   a left half that says what arrives and how often, and a right half that is a
+   proper card — a labelled field, a full-width button, and the privacy line
+   directly under it where it answers the question a reader actually has.
+   -------------------------------------------------------------------------- */
+
+.tal-subscribe {
+    width: 100%;
+    padding: 8.5rem 0;
+    background-color: var(--tal-wash);
+    border-top: 1px solid var(--tal-rule);
+}
+
+.tal-subscribe-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 44rem;
+    column-gap: var(--tal-gutter);
+    row-gap: 4rem;
+    align-items: center;
+}
+
+.tal-subscribe-kicker {
+    margin: 0 0 1.6rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ghost-accent-color);
+}
+
+.tal-subscribe-title {
+    margin: 0;
+    max-width: 18ch;
+    font-size: clamp(2.8rem, 1.8rem + 2vw, 4rem);
+    line-height: 1.12;
+    letter-spacing: -0.022em;
+}
+
+.tal-subscribe-sub {
+    margin: 1.8rem 0 0;
+    max-width: 52rem;
+    font-size: 1.75rem;
+    line-height: 1.6;
+    color: var(--tal-muted);
+}
+
+.tal-subscribe-points {
+    list-style: none;
+    margin: 3rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 1.1rem;
+}
+
+.tal-subscribe-points li {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.1rem;
+    margin: 0;
+    font-size: 1.5rem;
+    line-height: 1.5;
+    color: rgba(0, 0, 0, 0.78);
+}
+
+.tal-subscribe-points svg {
+    flex: none;
+    width: 1.8rem;
+    height: 1.8rem;
+    margin-top: 0.2rem;
+    color: var(--ghost-accent-color);
+    fill: none;
+}
+
+/* -- The card -------------------------------------------------------------- */
+
+.tal-subscribe-form {
+    padding: 3.2rem;
+    background-color: #fff;
+    border: 1px solid var(--tal-rule);
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04), 0 26px 55px -32px var(--tal-shadow);
+}
+
+.tal-subscribe-note,
+.tal-subscribe-inline-note {
+    margin: 1.6rem 0 0;
+    font-size: 1.3rem;
+    line-height: 1.5;
+    color: var(--tal-muted);
+}
+
+/* -- The slim version at the end of an article ----------------------------- */
+
+.tal-subscribe-inline {
+    margin: 6rem 0 0;
+    padding: 3.4rem 3.6rem;
+    background-color: var(--tal-wash-soft);
+    border: 1px solid var(--tal-rule);
+    border-left: 3px solid var(--ghost-accent-color);
+    border-radius: 5px;
+    max-width: var(--tal-measure);
+}
+
+.tal-subscribe-inline-kicker {
+    margin: 0 0 1rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--ghost-accent-color);
+}
+
+.tal-subscribe-inline-title {
+    margin: 0 0 2.2rem;
+    font-size: 2.2rem;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+}
+
+/* -- Shared form overrides -------------------------------------------------
+
+   Source lays the form out as a 560px pill with the button floated inside it
+   on an absolute position. Both blocks here stack instead: a full-width field
+   with a visible edge, then a full-width button. It reads as a form rather
+   than as decoration, and it survives a long button label in any language.
+
+   The :hover pairs are deliberate — Source styles .gh-form:hover at the same
+   specificity, so an override without one would be undone on hover. */
+
+.tal-subscribe .gh-form,
+.tal-subscribe .gh-form:hover,
+.tal-subscribe-inline .gh-form,
+.tal-subscribe-inline .gh-form:hover {
+    display: block;
+    position: relative;
+    height: auto;
+    max-width: none;
+    background-color: transparent;
+    border-radius: 0;
+}
+
+.tal-subscribe .gh-form-input,
+.tal-subscribe-inline .gh-form-input {
+    position: static;
+    width: 100%;
+    height: 5.6rem;
+    padding-inline: 1.8rem;
+    font-size: 1.6rem;
+    color: #15171a;
+    background-color: #fff;
+    border: 1px solid var(--tal-rule);
+    border-radius: 5px;
+}
+
+.tal-subscribe .gh-form-input::placeholder,
+.tal-subscribe-inline .gh-form-input::placeholder {
+    color: rgba(0, 0, 0, 0.38);
+}
+
+.tal-subscribe .gh-form-input:focus,
+.tal-subscribe-inline .gh-form-input:focus {
+    border-color: var(--ghost-accent-color);
+    box-shadow: 0 0 0 3px var(--tal-wash);
+}
+
+.tal-subscribe .gh-form .gh-button,
+.tal-subscribe-inline .gh-form .gh-button {
+    position: static;
+    right: auto;
+    width: 100%;
+    min-width: 0;
+    height: 5.4rem;
+    margin-top: 1.2rem;
+    font-size: 1.6rem;
+    font-weight: 600;
+    border-radius: 100px;
+    background-color: var(--ghost-accent-color);
+    color: #fff;
+}
+
+.tal-subscribe .gh-form .gh-button:hover,
+.tal-subscribe-inline .gh-form .gh-button:hover {
+    opacity: 0.92;
+}
+
+/* Ghost writes the failure text into this paragraph and leaves it unstyled,
+   which is why a mistyped address currently looks like nothing happened. */
+.tal-subscribe [data-members-error],
+.tal-subscribe-inline [data-members-error] {
+    margin: 1rem 0 0;
+    font-size: 1.35rem;
+    line-height: 1.45;
+    color: #c0392b;
+}
+
+.tal-subscribe [data-members-error]:empty,
+.tal-subscribe-inline [data-members-error]:empty {
+    display: none;
+}
+
+/* --------------------------------------------------------------------------
+   14. Footer
+   -------------------------------------------------------------------------- */
+
+/* Source pushes the footer 120px clear of whatever is above it, because in its
+   own layout the thing above is the page content. Here it is the subscription
+   band, which already carries its own generous padding, so the extra gap only
+   makes the band look detached. */
+.gh-footer {
+    margin-top: 0;
+}
+
+.gh-footer-inner {
+    padding-bottom: 4.8rem;
+}
+
+/* Top tier: wordmark and standfirst on the left, social marks opposite. */
+.tal-footer-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 3.2rem;
+    padding-top: 5.6rem;
+}
+
+.tal-footer-brand {
+    max-width: 44rem;
+}
+
+.tal-footer .gh-footer-logo {
+    font-size: 2.1rem;
+    letter-spacing: -0.01em;
+}
+
+.tal-footer-tagline {
+    margin: 0.9rem 0 0;
+    font-size: 1.45rem;
+    line-height: 1.55;
+    color: var(--tal-muted);
+}
+
+/* Source centres the social row on a line of its own and hangs 32px beneath
+   it. On a publication with two accounts that leaves two marks stranded in the
+   middle of an empty band with nothing to relate to. */
+.tal-footer .gh-social-links {
+    justify-content: flex-end;
+    flex-shrink: 0;
+    gap: 1.8rem;
+    margin-bottom: 0;
+    padding-top: 0.4rem;
+}
+
+.tal-footer .gh-social-links a {
+    display: inline-flex;
+    color: var(--tal-muted);
+    transition: color 0.15s ease;
+}
+
+.tal-footer .gh-social-links a:hover {
+    color: var(--ghost-accent-color);
+}
+
+.tal-footer .gh-social-links svg {
+    width: 17px;
+    height: 17px;
+}
+
+/* Source reserves space for the social row whether or not there is anything in
+   it, which on a publication with no social accounts leaves an unexplained
+   gap above the footer bar. */
+.gh-social-links:empty {
+    display: none;
+}
+
+/* Source closes the bar with a second rule and 120px of empty page beneath it,
+   which was there to balance its own centred signup block. That block now
+   lives in the subscription band above, so the space reads as the page having
+   simply failed to end. */
+.tal-footer .gh-footer-bar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2.4rem;
+    margin-top: 3.6rem;
+    margin-bottom: 0;
+    border-bottom: 0;
+    border-top: 1px solid var(--tal-rule);
+    padding-block: 2.4rem 0;
+}
+
+.gh-footer-menu .nav {
+    justify-content: flex-start;
+}
+
+.gh-footer-menu a {
+    font-size: 1.4rem;
+    color: var(--tal-muted);
+}
+
+.gh-footer-menu a:hover {
+    color: inherit;
+}
+
+.gh-footer-copyright {
+    font-size: 1.35rem;
+    color: var(--tal-muted);
+    white-space: nowrap;
+}
+
+/* If the publication ever switches the footer to the accent colour, the muted
+   greys above would sit on a dark ground. Source already publishes a
+   light-on-dark secondary tone for exactly this case. */
+.gh-footer.has-accent-color .tal-footer-tagline,
+.gh-footer.has-accent-color .gh-footer-menu a,
+.gh-footer.has-accent-color .gh-footer-copyright,
+.gh-footer.has-accent-color .gh-social-links a {
+    color: var(--color-secondary-text);
+}
+
+.gh-footer.has-accent-color .tal-footer .gh-footer-bar {
+    border-top-color: var(--color-border);
+}
+
+@media (max-width: 700px) {
+    .tal-footer-top {
+        flex-direction: column;
+        gap: 2.4rem;
+        padding-top: 4rem;
+    }
+
+    .tal-footer .gh-social-links {
+        justify-content: flex-start;
+        padding-top: 0;
+    }
+
+    .tal-footer .gh-footer-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.6rem;
+    }
+
+    .gh-footer-copyright {
+        white-space: normal;
+        text-align: left;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   15. Mobile
+   -------------------------------------------------------------------------- */
+
+/* The rail needs more room than a tablet has. Below this width the body
+   becomes one column and everything the rail was holding moves above the text,
+   where it still works as a set of cards. */
+@media (max-width: 1100px) {
+    .tal-body {
+        grid-template-columns: minmax(0, 1fr);
+        row-gap: 3.4rem;
+    }
+
+    .tal-rail {
+        position: static;
+        order: -1;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(26rem, 1fr));
+        gap: 2rem;
+    }
+
+    .tal-body .gh-content.gh-canvas {
+        grid-template-columns:
+            [full-start wide-start main-start] minmax(0, 1fr)
+            [main-end wide-end full-end];
+    }
+
+    .tal-subscribe-inner {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .tal-subscribe-title,
+    .tal-subscribe-sub {
+        max-width: none;
+    }
+
+    /* On an article the rail carries the section list and a share card. The
+       section list is worth having above the text; being asked to share a
+       piece before reading a word of it is not, and a phone has its own share
+       button anyway. */
+    .tal-post .tal-rail .tal-rail-card {
+        display: none;
+    }
+}
+
+@media (max-width: 991px) {
+    .tal-masthead-inner {
+        grid-template-columns: 1fr;
+        gap: 4.6rem;
+    }
+
+    /* One column means the board card now sits under the words rather than
+       beside them, so the picture no longer needs a clear right-hand side. The
+       wash goes vertical and heavier: on a phone the masthead is most of the
+       first screen, and the type has to hold at arm's length in daylight. */
+    .tal-masthead.has-hero-image {
+        background-image:
+            linear-gradient(
+                175deg,
+                rgba(18, 40, 63, 0.95) 0%,
+                rgba(18, 40, 63, 0.90) 46%,
+                rgba(18, 40, 63, 0.93) 100%
+            ),
+            var(--tal-hero-image);
+        background-position: center, center 30%;
+    }
+
+    /* At this size the mark behind the call to action is wider than the words
+       in front of it, which turns texture into interference. */
+    .tal-cta-watermark {
+        display: none;
+    }
+
+    .tal-more-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 2.4rem;
+    }
+
+    .tal-more-item + .tal-more-item {
+        border-left: 0;
+        border-top: 1px solid var(--tal-rule);
+        padding-left: 0;
+        padding-top: 2.4rem;
+    }
+
+    .tal-masthead-standfirst {
+        max-width: none;
+    }
+
+    .tal-latest-grid {
+        grid-template-columns: 1fr;
+        row-gap: 3.4rem;
+    }
+
+    .tal-lead {
+        grid-column: 1;
+        grid-row: auto;
+        padding-bottom: 3.4rem;
+        border-bottom: 1px solid var(--tal-rule);
+    }
+
+    .tal-lead:only-child {
+        padding-bottom: 0;
+        border-bottom: 0;
+    }
+
+    /* The wide two-column feature collapses back to a single column. */
+    .tal-lead:only-child .tal-lead-link {
+        grid-template-columns: 1fr;
+        grid-template-rows: none;
+    }
+
+    .tal-lead:only-child .tal-meta,
+    .tal-lead:only-child .tal-lead-title,
+    .tal-lead:only-child .tal-lead-excerpt,
+    .tal-lead:only-child .tal-link-arrow {
+        grid-column: 1;
+        grid-row: auto;
+    }
+
+    .tal-lead:only-child .tal-lead-excerpt {
+        margin-top: 1.8rem;
+        padding-left: 0;
+        border-left: 0;
+    }
+
+    .tal-item {
+        grid-column: 1;
+        padding-bottom: 0;
+    }
+
+    .tal-item + .tal-item {
+        padding-top: 3.4rem;
+    }
+
+    .tal-statement-inner {
+        grid-template-columns: 1fr;
+        gap: 2.6rem;
+    }
+
+    .tal-data-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .gh-content {
+        font-size: 1.65rem;
+    }
+
+    .tal-pagination {
+        flex-direction: column;
+        gap: 1.4rem;
+        margin-top: 4.5rem;
+    }
+
+    .tal-error-band {
+        padding: 10vmin 0 12vmin;
+    }
+
+    .tal-masthead-band {
+        margin-bottom: 4.4rem;
+        padding: 4.6rem 0 4rem;
+    }
+
+    .tal-masthead-band.has-feature {
+        padding-bottom: 7rem;
+    }
+
+    .tal-masthead-band.has-feature + .tal-axis {
+        margin-bottom: 4.4rem;
+    }
+
+    .tal-feature {
+        margin-top: -4.5rem;
+    }
+
+    .tal-crumbs {
+        margin-bottom: 1.8rem;
+    }
+
+    .tal-masthead-band .tal-masthead-title {
+        max-width: none;
+    }
+
+    .tal-masthead-standfirst {
+        margin-top: 1.6rem;
+        font-size: 1.75rem;
+    }
+
+    .tal-byline {
+        margin-top: 2.4rem;
+        padding-top: 1.8rem;
+    }
+
+    .tal-body {
+        padding-bottom: 6rem;
+    }
+
+    .tal-subscribe {
+        padding: 6rem 0;
+    }
+
+    .tal-subscribe-form {
+        padding: 2.4rem 2rem;
+    }
+
+    .tal-subscribe-inline {
+        padding: 2.6rem 2rem;
+    }
+
+    .gh-content.tal-prose > p:first-child {
+        font-size: 1.8rem;
+    }
+
+    .gh-content.tal-prose > h2 {
+        font-size: 2.3rem;
+    }
+
+    .gh-content.tal-prose > h2:not(:first-child) {
+        margin-top: 4.6rem;
+        padding-top: 2.2rem;
+    }
+
+    .tal-jump {
+        margin-bottom: 4rem;
+        padding: 2rem 2rem 1.8rem;
+    }
+
+    .tal-band {
+        padding: 6rem 0;
+    }
+
+    .tal-masthead {
+        padding: 5rem 0 6rem;
+    }
+
+    .tal-masthead-standfirst {
+        font-size: 1.85rem;
+    }
+
+    .tal-masthead-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 2rem;
+        margin-top: 3.4rem;
+    }
+
+    .tal-masthead-actions .tal-link-arrow {
+        justify-content: center;
+    }
+
+    .tal-button {
+        width: 100%;
+        padding: 1.6rem 2rem;
+    }
+
+    .tal-boardcard {
+        padding: 2.2rem 2rem 1.8rem;
+    }
+
+    .tal-boardlist-row {
+        gap: 1.2rem;
+    }
+
+    .tal-monogram {
+        min-width: 5.6rem;
+        font-size: 1.1rem;
+    }
+
+    .tal-statement {
+        padding: 6rem 0 5rem;
+    }
+
+    .tal-statement-content {
+        font-size: 1.85rem;
+    }
+
+    .tal-section-head {
+        margin-bottom: 3.4rem;
+    }
+
+    /* One column on a phone, but laid out sideways — chip on the left, words on
+       the right — so four cards do not turn into four screens of scrolling. */
+    .tal-data-grid {
+        grid-template-columns: 1fr;
+        gap: 1.6rem;
+    }
+
+    .tal-data-card {
+        display: grid;
+        grid-template-columns: 4.4rem minmax(0, 1fr);
+        column-gap: 1.8rem;
+        padding: 2.2rem 2rem;
+    }
+
+    .tal-data-chip {
+        width: 4.4rem;
+        height: 4.4rem;
+        margin-bottom: 0;
+        grid-row: 1 / span 2;
+    }
+
+    .tal-data-icon {
+        width: 2.2rem;
+        height: 2.2rem;
+    }
+
+    .tal-cta {
+        padding: 6.5rem 0;
+    }
+
+    .tal-jump {
+        padding: 2rem 2rem;
+    }
+
+    .tal-form-placeholder {
+        padding: 3rem 1.8rem;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   16. Reduced motion and print
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+    .tal-button,
+    .tal-data-card,
+    .tal-data-chip,
+    .tal-link-arrow svg,
+    .tal-lead-title,
+    .tal-item-title {
+        transition: none;
+    }
+
+    .tal-button:hover,
+    .tal-data-card:hover {
+        transform: none;
+    }
+
+    .gh-content [id]:target {
+        animation: none;
+    }
+}
+
+@media print {
+    .gh-head,
+    .gh-footer-signup,
+    .gh-social-links,
+    .tal-jump,
+    .tal-rail,
+    .tal-subscribe,
+    .tal-subscribe-inline,
+    .tal-more,
+    .tal-masthead-actions,
+    .tal-cta {
+        display: none !important;
+    }
+
+    .tal-body {
+        display: block;
+    }
+
+    .tal-masthead-band {
+        background-color: transparent;
+        padding: 0 0 2rem;
+    }
+
+    /* On paper the photograph and its wash are a page of wet ink. Drop both
+       and put the wordmark back to its dark-on-white colours. */
+    .tal-masthead.has-hero-image {
+        background: none;
+        color: inherit;
+    }
+
+    .tal-masthead.has-hero-image .tal-wm-name {
+        color: #000;
+    }
+
+    .tal-masthead.has-hero-image .tal-wm-the,
+    .tal-masthead.has-hero-image .tal-wm-letter {
+        color: #666;
+    }
+
+    .tal-masthead.has-hero-image .tal-masthead-standfirst {
+        color: #333;
+    }
+
+    .tal-band {
+        padding: 2rem 0;
+    }
+
+    .tal-boardcard,
+    .tal-data-card {
+        box-shadow: none;
+    }
+}
