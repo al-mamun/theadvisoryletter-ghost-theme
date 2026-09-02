@@ -1,0 +1,145 @@
+{{!< default}}
+{{!-- An article. Built on the same three parts as a static page — masthead
+     band, feature image hung over its lower edge, then a reading column with
+     a sticky rail — so moving between an article and a page never moves the
+     text sideways. --}}
+
+{{#post}}
+
+<main class="gh-main tal-post">
+
+    <article class="gh-article {{post_class}}">
+
+        <header class="tal-masthead-band{{#if feature_image}} has-feature{{/if}}">
+            <div class="tal-axis">
+
+                <nav class="tal-crumbs" aria-label="{{t "Breadcrumb"}}">
+                    <a href="{{@site.url}}/">{{@site.title}}</a>
+                    <span class="tal-crumbs-sep" aria-hidden="true">/</span>
+                    <a href="{{@site.url}}/articles/">{{t "Articles"}}</a>
+                    {{#if primary_tag}}
+                        <span class="tal-crumbs-sep" aria-hidden="true">/</span>
+                        <a class="tal-crumbs-current" href="{{primary_tag.url}}">{{primary_tag.name}}</a>
+                    {{/if}}
+                </nav>
+
+                <h1 class="tal-masthead-title is-title">{{title}}</h1>
+
+                {{#if custom_excerpt}}
+                    <p class="tal-masthead-standfirst is-body">{{custom_excerpt}}</p>
+                {{/if}}
+
+                {{#if @custom.show_post_metadata}}
+                    <div class="tal-byline">
+                        <div class="tal-byline-faces instapaper_ignore">
+                            {{#foreach authors}}
+                                {{#if profile_image}}
+                                    <a href="{{url}}"><img class="author-profile-image" src="{{img_url profile_image size="xs"}}" alt="{{name}}"></a>
+                                {{else}}
+                                    <a href="{{url}}">{{> "icons/avatar"}}</a>
+                                {{/if}}
+                            {{/foreach}}
+                        </div>
+                        <span class="tal-byline-name">{{authors}}</span>
+                        <span class="tal-byline-sep" aria-hidden="true">&middot;</span>
+                        <time class="tal-byline-date" datetime="{{date format="YYYY-MM-DD"}}">{{date format="D MMMM YYYY"}}</time>
+                        {{#if reading_time}}
+                            <span class="tal-byline-sep" aria-hidden="true">&middot;</span>
+                            <span class="tal-byline-length">{{reading_time minute=(t "1 min read") minutes=(t "% min read")}}</span>
+                        {{/if}}
+                    </div>
+                {{/if}}
+
+            </div>
+        </header>
+
+        {{#if feature_image}}
+            <div class="tal-axis">
+                <figure class="tal-feature">
+                    <img
+                        srcset="{{img_url feature_image size="s"}} 320w,
+                                {{img_url feature_image size="m"}} 600w,
+                                {{img_url feature_image size="l"}} 960w,
+                                {{img_url feature_image size="xl"}} 1200w,
+                                {{img_url feature_image size="xxl"}} 2000w"
+                        sizes="(max-width: 1200px) 100vw, 1256px"
+                        src="{{img_url feature_image size="xl"}}"
+                        alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
+                    >
+                    {{#if feature_image_caption}}
+                        <figcaption>{{feature_image_caption}}</figcaption>
+                    {{/if}}
+                </figure>
+            </div>
+        {{/if}}
+
+        <div class="tal-axis tal-body">
+
+            <div class="tal-body-main">
+
+                <section class="gh-content gh-canvas is-body tal-prose{{#if @custom.enable_drop_caps_on_posts}} drop-cap{{/if}}">
+                    {{content}}
+                </section>
+
+                {{> "components/subscribe-inline"}}
+
+                {{#if comments}}
+                    <div class="tal-comments">
+                        {{comments}}
+                    </div>
+                {{/if}}
+
+            </div>
+
+            <aside class="tal-rail">
+
+                <div class="tal-rail-slot" data-tal-rail
+                     data-tal-jump-title="{{t "On this page"}}"
+                     data-tal-jump-label="{{t "Sections on this page"}}"></div>
+
+                <div class="tal-rail-card">
+                    <p class="tal-rail-label">{{t "Share"}}</p>
+                    <p class="tal-rail-note">{{t "Send this to someone who should read it."}}</p>
+                    {{> "components/share"}}
+                </div>
+
+            </aside>
+
+        </div>
+
+    </article>
+
+</main>
+
+{{/post}}
+
+{{#if @custom.show_related_articles}}
+    {{#get "posts" include="authors" filter="id:-{{post.id}}" limit="3" as |next|}}
+        {{#if next}}
+            <section class="tal-band tal-more">
+                <div class="tal-axis">
+
+                    <header class="tal-section-head">
+                        <h2 class="tal-section-title is-title">{{t "Read more"}}</h2>
+                        <a class="tal-link-arrow" href="/articles/">{{t "All articles"}} {{> "icons/arrow"}}</a>
+                    </header>
+
+                    <div class="tal-more-grid">
+                        {{#foreach next}}
+                            <article class="tal-more-item">
+                                <a class="tal-more-link" href="{{url}}">
+                                    <p class="tal-meta">
+                                        {{#if primary_tag}}<span class="tal-meta-tag">{{primary_tag.name}}</span>{{/if}}
+                                        <time datetime="{{date format="YYYY-MM-DD"}}">{{date format="D MMMM YYYY"}}</time>
+                                    </p>
+                                    <h3 class="tal-more-title is-title">{{title}}</h3>
+                                </a>
+                            </article>
+                        {{/foreach}}
+                    </div>
+
+                </div>
+            </section>
+        {{/if}}
+    {{/get}}
+{{/if}}

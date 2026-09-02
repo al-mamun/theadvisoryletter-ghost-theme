@@ -1,0 +1,89 @@
+{{!< default}}
+{{!-- The article index at /articles/. Every published article appears here,
+     newest first. Nothing to edit: publish an article and it shows up.
+
+     The masthead band and the axis are the same ones a page and an article
+     use, so the heading here lines up with the heading everywhere else. --}}
+
+<main class="gh-main tal-index">
+
+    <header class="tal-masthead-band">
+        <div class="tal-axis">
+
+            <nav class="tal-crumbs" aria-label="{{t "Breadcrumb"}}">
+                <a href="{{@site.url}}/">{{@site.title}}</a>
+                <span class="tal-crumbs-sep" aria-hidden="true">/</span>
+                <span class="tal-crumbs-current" aria-current="page">{{#if @custom.articles_title}}{{@custom.articles_title}}{{else}}{{t "Articles"}}{{/if}}</span>
+            </nav>
+
+            <h1 class="tal-masthead-title is-title">
+                {{#if @custom.articles_title}}{{@custom.articles_title}}{{else}}{{t "Articles"}}{{/if}}
+            </h1>
+
+            {{#if @custom.articles_description}}
+                <p class="tal-masthead-standfirst is-body">{{@custom.articles_description}}</p>
+            {{/if}}
+
+        </div>
+    </header>
+
+    <div class="tal-axis tal-body">
+
+        <div class="tal-body-main">
+
+            <section class="gh-container is-list{{#unless @custom.show_images_in_feed}} no-image{{/unless}} tal-articles">
+                <div class="gh-feed">
+                    {{#foreach posts}}
+                        {{> "post-card" lazyLoad=true}}
+                    {{else}}
+                        <p class="tal-empty is-body">{{t "No posts"}}</p>
+                    {{/foreach}}
+                </div>
+            </section>
+
+            {{#match pagination.pages ">" 1}}
+                <nav class="tal-pagination" role="navigation" aria-label="{{t "Pagination"}}">
+                    {{#if pagination.prev}}
+                        <a class="tal-page-link" href="{{page_url pagination.prev}}" rel="prev">&larr; {{t "Newer"}}</a>
+                    {{else}}
+                        <span class="tal-page-link is-disabled">&larr; {{t "Newer"}}</span>
+                    {{/if}}
+
+                    <span class="tal-page-count">{{t "Page {page} of {pages}" page=pagination.page pages=pagination.pages}}</span>
+
+                    {{#if pagination.next}}
+                        <a class="tal-page-link" href="{{page_url pagination.next}}" rel="next">{{t "Older"}} &rarr;</a>
+                    {{else}}
+                        <span class="tal-page-link is-disabled">{{t "Older"}} &rarr;</span>
+                    {{/if}}
+                </nav>
+            {{/match}}
+
+        </div>
+
+        <aside class="tal-rail">
+
+            {{#get "tags" limit="8" filter="visibility:public" order="count.posts desc" as |topics|}}
+                {{#if topics}}
+                    <div class="tal-rail-card">
+                        <p class="tal-rail-label">{{t "Browse by topic"}}</p>
+                        <ul class="tal-topics">
+                            {{#foreach topics}}
+                                <li><a href="{{url}}">{{name}}<span class="tal-topics-count">{{count.posts}}</span></a></li>
+                            {{/foreach}}
+                        </ul>
+                    </div>
+                {{/if}}
+            {{/get}}
+
+            <div class="tal-rail-card">
+                <p class="tal-rail-label">{{t "About this record"}}</p>
+                <p class="tal-rail-note">{{t "Original reporting is published here alongside referenced external coverage. Every source is named."}}</p>
+                <a class="tal-link-arrow is-small" href="/editorial-methodology/">{{t "How we verify"}} {{> "icons/arrow"}}</a>
+            </div>
+
+        </aside>
+
+    </div>
+
+</main>

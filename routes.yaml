@@ -1,0 +1,29 @@
+# TheAdvisoryLetter.org routing
+#
+# What this file does, in plain language:
+#
+#   1. The front page ("/") shows the static page titled "TheAdvisoryLetter.org"
+#      (slug: home) instead of a list of articles. Edit that page in Ghost under
+#      Pages, and the front page changes.
+#
+#   2. All articles live under /articles/. The "Articles" link in the navigation
+#      points there, and each article's own address looks like
+#      /articles/the-article-title/.
+#
+# You do not need to touch this file to add pages or write articles.
+# It only needs changing if you ever want the front page to become a normal
+# article feed again, or want articles at a different address.
+
+routes:
+  /:
+    data: page.home
+    template: home
+
+collections:
+  /articles/:
+    permalink: /articles/{slug}/
+    template: articles
+
+taxonomies:
+  tag: /tag/{slug}/
+  author: /author/{slug}/

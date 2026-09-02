@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="{{@site.locale}}">
+<head>
+
+    {{!-- Basic meta - advanced meta is output with {{ghost_head}} below --}}
+    <title>{{meta_title page=(t " (Page %)")}}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    {{!-- Preload main styles and scripts for better performance --}}
+    <link rel="preload" as="style" href="{{asset "built/screen.css"}}">
+    <link rel="preload" as="script" href="{{asset "built/source.js"}}">
+    
+    {{!-- Fonts are preloaded and defined in the default template to avoid layout shift --}}
+    {{> "typography/fonts"}}
+
+    {{!-- Theme assets - use the {{asset}} helper to reference styles & scripts, this will take care of caching and cache-busting automatically --}}
+    <link rel="stylesheet" type="text/css" href="{{asset "built/screen.css"}}">
+
+    {{!-- Publication styles for TheAdvisoryLetter.org, layered on top of Source --}}
+    <link rel="stylesheet" type="text/css" href="{{asset "tal.css"}}">
+
+    {{!-- Page background. Source exposes this as a colour picker; this
+         publication is fixed on white — the layout leans on paper-white for the
+         reading column and tinted washes for the bands around it, and a
+         coloured page ground breaks that relationship. Held here as a variable
+         (rather than deleted) because Source's own stylesheet reads it, and the
+         script below derives the light/dark text class from it. --}}
+    <style>
+        :root {
+            --background-color: #ffffff
+        }
+    </style>
+
+    <script>
+        /* The script for calculating the color contrast has been taken from
+        https://gomakethings.com/dynamically-changing-the-text-color-based-on-background-color-contrast-with-vanilla-js/ */
+        var accentColor = getComputedStyle(document.documentElement).getPropertyValue('--background-color');
+        accentColor = accentColor.trim().slice(1);
+
+        if (accentColor.length === 3) {
+            accentColor = accentColor[0] + accentColor[0] + accentColor[1] + accentColor[1] + accentColor[2] + accentColor[2];
+        }
+
+        var r = parseInt(accentColor.substr(0, 2), 16);
+        var g = parseInt(accentColor.substr(2, 2), 16);
+        var b = parseInt(accentColor.substr(4, 2), 16);
+        var yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+        var textColor = (yiq >= 128) ? 'dark' : 'light';
+
+        document.documentElement.className = `has-${textColor}-text`;
+    </script>
+
+    {{!-- This tag outputs all your advanced SEO meta, structured data, and other important settings, it should always be the last tag before the closing head tag --}}
+    {{ghost_head}}
+
+</head>
+<body class="{{body_class}} has-{{#match @custom.title_font "Elegant serif"}}serif{{else match @custom.title_font "Consistent mono"}}mono{{else}}sans{{/match}}-title has-{{#match @custom.body_font "Elegant serif"}}serif{{else}}sans{{/match}}-body">
+
+<div class="gh-viewport">
+    
+    {{> "components/navigation" navigationLayout=@custom.navigation_layout}}
+
+    {{{body}}}
+    
+    {{> "components/footer"}}
+    
+</div>
+
+{{#is "post, page"}}
+    {{> "lightbox"}}
+{{/is}}
+
+{{!-- Scripts - handle responsive videos, infinite scroll, and navigation dropdowns --}}
+<script src="{{asset "built/source.js"}}"></script>
+
+{{!-- Source measures the navigation to decide whether menu items fit before
+     the web fonts have finished loading, so it can wrongly fold the last item
+     into the "..." dropdown. Re-run that measurement once fonts are ready. --}}
+<script>
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(function () {
+            window.dispatchEvent(new Event('resize'));
+        });
+    }
+</script>
+
+{{#if @custom.show_section_jump_links}}
+    <script src="{{asset "tal.js"}}"></script>
+{{/if}}
+
+{{!-- Ghost outputs required functional scripts with this tag, it should always be the last thing before the closing body tag --}}
+{{ghost_foot}}
+
+</body>
+</html>

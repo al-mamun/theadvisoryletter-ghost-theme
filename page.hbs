@@ -1,0 +1,107 @@
+{{!< default}}
+{{!-- Every static page (About, Data, Resources, Contact…) uses this template.
+
+     Structure, top to bottom:
+
+       1. a masthead band on the same 1320px axis as the site header, the
+          footer and every band on the front page, so the whole site shares
+          one left edge;
+       2. the feature image, if there is one, hung over the lower edge of that
+          band;
+       3. the body, split into a reading column and a sticky rail. The "on
+          this page" list is written into the rail by tal.js.
+
+     Nothing here needs editing to add a page: create it in Ghost and it picks
+     all of this up. --}}
+
+{{#post}}
+
+<main class="gh-main tal-page">
+    <article class="gh-article {{post_class}}">
+
+        {{#match @page.show_title_and_feature_image}}
+
+            <header class="tal-masthead-band{{#if feature_image}} has-feature{{/if}}">
+                <div class="tal-axis">
+
+                    <nav class="tal-crumbs" aria-label="{{t "Breadcrumb"}}">
+                        <a href="{{@site.url}}/">{{@site.title}}</a>
+                        <span class="tal-crumbs-sep" aria-hidden="true">/</span>
+                        <span class="tal-crumbs-current" aria-current="page">{{title}}</span>
+                    </nav>
+
+                    <h1 class="tal-masthead-title is-title">{{title}}</h1>
+
+                    {{#if custom_excerpt}}
+                        <p class="tal-masthead-standfirst is-body">{{custom_excerpt}}</p>
+                    {{/if}}
+
+                </div>
+            </header>
+
+            {{#if feature_image}}
+                <div class="tal-axis">
+                    <figure class="tal-feature">
+                        <img
+                            srcset="{{img_url feature_image size="s"}} 320w,
+                                    {{img_url feature_image size="m"}} 600w,
+                                    {{img_url feature_image size="l"}} 960w,
+                                    {{img_url feature_image size="xl"}} 1200w,
+                                    {{img_url feature_image size="xxl"}} 2000w"
+                            sizes="(max-width: 1200px) 100vw, 1256px"
+                            src="{{img_url feature_image size="xl"}}"
+                            alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
+                        >
+                        {{#if feature_image_caption}}
+                            <figcaption>{{feature_image_caption}}</figcaption>
+                        {{/if}}
+                    </figure>
+                </div>
+            {{/if}}
+
+        {{/match}}
+
+        <div class="tal-axis tal-body">
+
+            <div class="tal-body-main">
+                <section class="gh-content gh-canvas is-body tal-prose tal-page-content">
+                    {{content}}
+                </section>
+            </div>
+
+            <aside class="tal-rail">
+
+                {{!-- tal.js writes the section list in here when the page has
+                      enough headings to be worth one. --}}
+                <div class="tal-rail-slot" data-tal-rail
+                     data-tal-jump-title="{{t "On this page"}}"
+                     data-tal-jump-label="{{t "Sections on this page"}}"></div>
+
+                <div class="tal-rail-card">
+                    <p class="tal-rail-label">{{t "This page"}}</p>
+
+                    <div class="tal-rail-line">
+                        <span class="tal-rail-key">{{t "Updated"}}</span>
+                        <span class="tal-rail-value">
+                            <time datetime="{{date updated_at format="YYYY-MM-DD"}}">{{date updated_at format="D MMM YYYY"}}</time>
+                        </span>
+                    </div>
+
+                    {{#if reading_time}}
+                        <div class="tal-rail-line">
+                            <span class="tal-rail-key">{{t "Reading time"}}</span>
+                            <span class="tal-rail-value">{{reading_time minute=(t "1 min") minutes=(t "% min")}}</span>
+                        </div>
+                    {{/if}}
+
+                    {{> "components/share"}}
+                </div>
+
+            </aside>
+
+        </div>
+
+    </article>
+</main>
+
+{{/post}}

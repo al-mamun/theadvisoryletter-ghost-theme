@@ -1,0 +1,110 @@
+{{!< default}}
+{{!-- Everything written by one person. Same masthead band and axis as the
+     article index; the portrait, the links and the location sit in the rail
+     rather than crowding the title. --}}
+
+<main class="gh-main tal-index">
+
+    {{#author}}
+        <header class="tal-masthead-band">
+            <div class="tal-axis">
+
+                <nav class="tal-crumbs" aria-label="{{t "Breadcrumb"}}">
+                    <a href="{{@site.url}}/">{{@site.title}}</a>
+                    <span class="tal-crumbs-sep" aria-hidden="true">/</span>
+                    <a href="{{@site.url}}/articles/">{{t "Articles"}}</a>
+                    <span class="tal-crumbs-sep" aria-hidden="true">/</span>
+                    <span class="tal-crumbs-current" aria-current="page">{{name}}</span>
+                </nav>
+
+                <h1 class="tal-masthead-title is-title">{{name}}</h1>
+
+                {{#if bio}}
+                    <p class="tal-masthead-standfirst is-body">{{bio}}</p>
+                {{/if}}
+
+            </div>
+        </header>
+    {{/author}}
+
+    <div class="tal-axis tal-body">
+
+        <div class="tal-body-main">
+
+            <section class="gh-container is-list{{#unless @custom.show_images_in_feed}} no-image{{/unless}} tal-articles">
+                <div class="gh-feed">
+                    {{#foreach posts}}
+                        {{> "post-card" lazyLoad=true}}
+                    {{else}}
+                        <p class="tal-empty is-body">{{t "No posts"}}</p>
+                    {{/foreach}}
+                </div>
+            </section>
+
+            {{#match pagination.pages ">" 1}}
+                <nav class="tal-pagination" role="navigation" aria-label="{{t "Pagination"}}">
+                    {{#if pagination.prev}}
+                        <a class="tal-page-link" href="{{page_url pagination.prev}}" rel="prev">&larr; {{t "Newer"}}</a>
+                    {{else}}
+                        <span class="tal-page-link is-disabled">&larr; {{t "Newer"}}</span>
+                    {{/if}}
+
+                    <span class="tal-page-count">{{t "Page {page} of {pages}" page=pagination.page pages=pagination.pages}}</span>
+
+                    {{#if pagination.next}}
+                        <a class="tal-page-link" href="{{page_url pagination.next}}" rel="next">{{t "Older"}} &rarr;</a>
+                    {{else}}
+                        <span class="tal-page-link is-disabled">{{t "Older"}} &rarr;</span>
+                    {{/if}}
+                </nav>
+            {{/match}}
+
+        </div>
+
+        {{#author}}
+            <aside class="tal-rail">
+                <div class="tal-rail-card">
+
+                    {{#if profile_image}}
+                        <img class="tal-rail-portrait" src="{{img_url profile_image size="s"}}" alt="{{name}}" loading="lazy">
+                    {{/if}}
+
+                    <p class="tal-rail-label">{{t "Author"}}</p>
+
+                    <div class="tal-rail-line">
+                        <span class="tal-rail-key">{{t "Articles"}}</span>
+                        <span class="tal-rail-value">{{count.posts}}</span>
+                    </div>
+
+                    {{#if location}}
+                        <div class="tal-rail-line">
+                            <span class="tal-rail-key">{{t "Location"}}</span>
+                            <span class="tal-rail-value">{{location}}</span>
+                        </div>
+                    {{/if}}
+
+                    {{#if website}}
+                        <div class="tal-rail-line">
+                            <span class="tal-rail-key">{{t "Website"}}</span>
+                            <span class="tal-rail-value"><a href="{{website}}" target="_blank" rel="noopener">{{t "Visit"}}</a></span>
+                        </div>
+                    {{/if}}
+
+                    {{!-- The "is-loose" variant carries no rule of its own, so an
+                          author with no social accounts leaves nothing behind. --}}
+                    <div class="tal-share is-loose">
+                        {{#if twitter}}<a class="tal-share-link" href="{{social_url type="twitter"}}" target="_blank" rel="noopener" aria-label="X">{{> "icons/x"}}</a>{{/if}}
+                        {{#if facebook}}<a class="tal-share-link" href="{{social_url type="facebook"}}" target="_blank" rel="noopener" aria-label="Facebook">{{> "icons/facebook"}}</a>{{/if}}
+                        {{#if linkedin}}<a class="tal-share-link" href="{{social_url type="linkedin"}}" target="_blank" rel="noopener" aria-label="LinkedIn">{{> "icons/linkedin"}}</a>{{/if}}
+                        {{#if bluesky}}<a class="tal-share-link" href="{{social_url type="bluesky"}}" target="_blank" rel="noopener" aria-label="Bluesky">{{> "icons/bluesky"}}</a>{{/if}}
+                        {{#if mastodon}}<a class="tal-share-link" href="{{social_url type="mastodon"}}" target="_blank" rel="noopener" aria-label="Mastodon">{{> "icons/mastodon"}}</a>{{/if}}
+                        {{#if instagram}}<a class="tal-share-link" href="{{social_url type="instagram"}}" target="_blank" rel="noopener" aria-label="Instagram">{{> "icons/instagram"}}</a>{{/if}}
+                    </div>
+
+                </div>
+            </aside>
+        {{/author}}
+
+    </div>
+
+</main>

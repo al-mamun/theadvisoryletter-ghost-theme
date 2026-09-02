@@ -1,0 +1,32 @@
+{{!< default}}
+{{!-- Shown for 404s and any other error. Ghost's own fallback error page has
+     no navigation, no footer and no branding, so this keeps a visitor who
+     mistypes an address inside the publication — on the same masthead band
+     every other inner page opens with. --}}
+
+<main class="gh-main tal-index">
+
+    <header class="tal-masthead-band tal-error-band">
+        <div class="tal-axis">
+
+            <nav class="tal-crumbs" aria-label="{{t "Breadcrumb"}}">
+                <a href="{{@site.url}}/">{{@site.title}}</a>
+                <span class="tal-crumbs-sep" aria-hidden="true">/</span>
+                <span class="tal-crumbs-current" aria-current="page">{{t "Error {code}" code=statusCode}}</span>
+            </nav>
+
+            <h1 class="tal-masthead-title is-title">{{message}}</h1>
+
+            <p class="tal-masthead-standfirst is-body">{{t "The page you were looking for isn't here. It may have been moved, or the address may have been mistyped."}}</p>
+
+            <div class="tal-error-links">
+                <a class="tal-button" href="{{@site.url}}">{{t "Go to the front page"}}</a>
+                <a class="tal-link-arrow" href="{{@site.url}}/articles/">
+                    {{t "Browse all articles"}} {{> "icons/arrow"}}
+                </a>
+            </div>
+
+        </div>
+    </header>
+
+</main>

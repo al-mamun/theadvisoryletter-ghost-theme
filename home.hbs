@@ -1,0 +1,283 @@
+{{!< default}}
+{{!-- The front page.
+
+     The words in the middle of the page come from the static page with the
+     slug "home", bound in routes.yaml — edit that page under Pages in Ghost
+     and this page changes.
+
+     Everything else assembles itself from the site's own content, so there is
+     nothing here to keep up to date by hand: the reporting band reads the one
+     most recent post, the masthead picture is the feature image on that same
+     "home" page, the record cards point at the four sections of the Data page,
+     and both calls to action read from Design & branding → Customise. --}}
+
+{{#post}}
+
+<main class="tal-home">
+
+    {{!-- ------------------------------------------------------------------
+         Masthead
+         ------------------------------------------------------------------ --}}
+
+    {{!-- The masthead runs over a photograph with a navy wash across it.
+
+         The picture comes from the feature image on this same "home" page, so
+         it is changed in Ghost like any other picture and never in this file.
+         Until one is set, the drawn Capitol in assets/images stands in so the
+         treatment can be seen. Either way the wash keeps the type legible. --}}
+    <section class="tal-band tal-masthead has-hero-image"
+             {{#if feature_image}}style="--tal-hero-image:url('{{img_url feature_image size="xxl"}}')"{{/if}}>
+        <div class="tal-band-inner tal-masthead-inner">
+
+            <div class="tal-masthead-text">
+                {{#if @custom.hero_eyebrow}}
+                    <p class="tal-eyebrow">{{@custom.hero_eyebrow}}</p>
+                {{/if}}
+
+                <h1 class="tal-masthead-title tal-wordmark is-title">{{> "components/wordmark"}}</h1>
+
+                {{#if custom_excerpt}}
+                    <p class="tal-masthead-standfirst is-body">{{custom_excerpt}}</p>
+                {{else}}
+                    {{#if @site.description}}
+                        <p class="tal-masthead-standfirst is-body">{{@site.description}}</p>
+                    {{/if}}
+                {{/if}}
+
+                <div class="tal-masthead-actions">
+                    {{#if @custom.cta_button_text}}
+                        <a class="tal-button" href="{{@custom.cta_button_url}}">{{@custom.cta_button_text}}</a>
+                    {{/if}}
+                    <a class="tal-link-arrow" href="/editorial-methodology/">{{t "How we verify"}} {{> "icons/arrow"}}</a>
+                </div>
+            </div>
+
+            <aside class="tal-boardcard">
+                <header class="tal-boardcard-head">
+                    <svg class="tal-boardcard-mark" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                        <path d="M12 2.4 4.2 5.3v6.2c0 4.6 3.2 8.4 7.8 9.9 4.6-1.5 7.8-5.3 7.8-9.9V5.3L12 2.4Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+                        <path d="m8.5 11.9 2.4 2.4 4.6-4.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span class="tal-boardcard-label">{{t "Boards under review"}}</span>
+                </header>
+
+                {{!-- The boards come from Ghost tags, so the list is edited
+                     under Tags rather than in this file — and each board
+                     becomes a link to everything written about it.
+
+                     A tag joins this list when its slug begins "board-".
+                     Tag name        the monogram in the chip, e.g. AMB
+                     Tag description the full board name beside it
+                     Tag slug        also the sort key, so to force an order
+                                     other than alphabetical, number the slugs:
+                                     board-1-amb, board-2-azbn, and so on.
+
+                     Until any such tag exists, the four boards below stand in,
+                     so the card is never empty. --}}
+                {{#get "tags" filter="slug:~^'board-'+visibility:public" limit="12" order="slug asc" as |boards|}}
+                    {{#if boards}}
+                        <ul class="tal-boardlist">
+                            {{#foreach boards}}
+                                <li class="tal-boardlist-item">
+                                    <a class="tal-boardlist-row" href="{{url}}">
+                                        <span class="tal-monogram">{{name}}</span>
+                                        <span class="tal-boardlist-name">{{#if description}}{{description}}{{else}}{{name}}{{/if}}</span>
+                                    </a>
+                                </li>
+                            {{/foreach}}
+                        </ul>
+                    {{else}}
+                        <ul class="tal-boardlist">
+                            <li class="tal-boardlist-item">
+                                <span class="tal-boardlist-row">
+                                    <span class="tal-monogram">AMB</span>
+                                    <span class="tal-boardlist-name">Arizona Medical Board</span>
+                                </span>
+                            </li>
+                            <li class="tal-boardlist-item">
+                                <span class="tal-boardlist-row">
+                                    <span class="tal-monogram">AZBN</span>
+                                    <span class="tal-boardlist-name">Arizona State Board of Nursing</span>
+                                </span>
+                            </li>
+                            <li class="tal-boardlist-item">
+                                <span class="tal-boardlist-row">
+                                    <span class="tal-monogram">AZBO</span>
+                                    <span class="tal-boardlist-name">Arizona Board of Osteopathic Examiners</span>
+                                </span>
+                            </li>
+                            <li class="tal-boardlist-item">
+                                <span class="tal-boardlist-row">
+                                    <span class="tal-monogram">ARBPA</span>
+                                    <span class="tal-boardlist-name">Arizona Regulatory Board of Physician Assistants</span>
+                                </span>
+                            </li>
+                        </ul>
+                    {{/if}}
+                {{/get}}
+
+                <footer class="tal-boardcard-foot">
+                    <a class="tal-link-arrow is-small" href="/about/">{{t "What we cover"}} {{> "icons/arrow"}}</a>
+                </footer>
+            </aside>
+
+        </div>
+    </section>
+
+    {{!-- ------------------------------------------------------------------
+         Statement — this is the editable part. Whatever is written on the
+         "home" page in Ghost appears here.
+         ------------------------------------------------------------------ --}}
+
+    <section class="tal-band tal-statement">
+        <div class="tal-band-inner tal-statement-inner">
+
+            <div class="tal-statement-rail">
+                <p class="tal-kicker">{{t "What we do"}}</p>
+            </div>
+
+            {{!-- gh-canvas is kept so Ghost's own cards — images, bookmarks,
+                 embeds — still lay out correctly inside the editable text. --}}
+            <section class="gh-content gh-canvas is-body tal-statement-content">
+                {{content}}
+            </section>
+
+        </div>
+    </section>
+
+    {{!-- ------------------------------------------------------------------
+         Latest reporting — the single most recent article, nothing else.
+
+         Deliberately not a card: a date above, the headline, one line of
+         excerpt, and a thin gold rule down the left edge to say it is
+         clickable. The whole band disappears until something is published.
+         ------------------------------------------------------------------ --}}
+
+    {{#get "posts" limit="1" include="authors" as |recent|}}
+        {{#if recent}}
+            <section class="tal-band tal-latest">
+                <div class="tal-band-inner">
+
+                    <header class="tal-section-head">
+                        <h2 class="tal-section-title is-title">{{t "Latest reporting"}}</h2>
+                        <a class="tal-link-arrow" href="/articles/">{{t "All articles"}} {{> "icons/arrow"}}</a>
+                    </header>
+
+                    {{#foreach recent}}
+                        <article class="tal-newest">
+                            <a class="tal-newest-link" href="{{url}}">
+                                <time class="tal-newest-date" datetime="{{date format="YYYY-MM-DD"}}">{{date format="D MMMM YYYY"}}</time>
+                                <h3 class="tal-newest-title is-title">{{title}}</h3>
+                                <p class="tal-newest-excerpt is-body">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="28"}}{{/if}}</p>
+                            </a>
+                        </article>
+                    {{/foreach}}
+
+                </div>
+            </section>
+        {{/if}}
+    {{/get}}
+
+    {{!-- ------------------------------------------------------------------
+         The record — the four sections of the Data page.
+         ------------------------------------------------------------------ --}}
+
+    <section class="tal-band tal-data">
+        <div class="tal-band-inner">
+
+            <header class="tal-section-head">
+                <h2 class="tal-section-title is-title">{{t "The record"}}</h2>
+                <a class="tal-link-arrow" href="/data/">{{t "Open the data"}} {{> "icons/arrow"}}</a>
+            </header>
+
+            {{!-- The record cards come from Ghost pages, so they are written,
+                 retitled, reordered and added to in the editor.
+
+                 A page joins this row when it carries the internal tag
+                 #record. Title and excerpt are the card; the card links to the
+                 page. Order follows publish date, so changing a page's date
+                 moves it. A feature image on the page replaces the drawn mark.
+
+                 Until any such page exists, the four cards below stand in and
+                 point at the sections of the Data page, exactly as before. --}}
+            {{#get "pages" filter="tag:hash-record" limit="8" order="published_at asc" as |records|}}
+                {{#if records}}
+                    <div class="tal-data-grid">
+                        {{#foreach records}}
+                            <a class="tal-data-card" href="{{url}}">
+                                <span class="tal-data-chip">
+                                    {{#if feature_image}}
+                                        <img class="tal-data-image" src="{{img_url feature_image size="xs"}}" alt="" loading="lazy">
+                                    {{else}}
+                                        {{> "components/record-icon" n=@number}}
+                                    {{/if}}
+                                </span>
+                                <h3 class="tal-data-title is-title">{{title}}</h3>
+                                <p class="tal-data-text">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="26"}}{{/if}}</p>
+                            </a>
+                        {{/foreach}}
+                    </div>
+                {{else}}
+                    <div class="tal-data-grid">
+
+                        <a class="tal-data-card" href="/data/#searchable-records">
+                            <span class="tal-data-chip">{{> "components/record-icon" n=1}}</span>
+                            <h3 class="tal-data-title is-title">Searchable Records</h3>
+                            <p class="tal-data-text">Disciplinary actions, advisory letters and dismissals, searchable by board, practitioner and outcome.</p>
+                        </a>
+
+                        <a class="tal-data-card" href="/data/#research-analysis-and-statistics">
+                            <span class="tal-data-chip">{{> "components/record-icon" n=2}}</span>
+                            <h3 class="tal-data-title is-title">Research &amp; Statistics</h3>
+                            <p class="tal-data-text">Complaint volumes, dismissal rates and outcomes, drawn from board minutes and public records requests.</p>
+                        </a>
+
+                        <a class="tal-data-card" href="/data/#annual-report-analysis">
+                            <span class="tal-data-chip">{{> "components/record-icon" n=3}}</span>
+                            <h3 class="tal-data-title is-title">Annual Report Analysis</h3>
+                            <p class="tal-data-text">Each board's annual report read against the Auditor General's performance audit and sunset review findings.</p>
+                        </a>
+
+                        <a class="tal-data-card" href="/data/#foia-request-log">
+                            <span class="tal-data-chip">{{> "components/record-icon" n=4}}</span>
+                            <h3 class="tal-data-title is-title">Public Records Request Log</h3>
+                            <p class="tal-data-text">Every public records request filed under A.R.S. &sect;39-121, with the date, the board and the response received.</p>
+                        </a>
+
+                    </div>
+                {{/if}}
+            {{/get}}
+        </div>
+    </section>
+
+    {{!-- ------------------------------------------------------------------
+         Call to action
+         ------------------------------------------------------------------ --}}
+
+    {{#if @custom.cta_button_text}}
+        <section class="tal-band tal-cta">
+            {{!-- The record-sheet mark, blown up and faded, sitting behind the
+                 words. Decorative only, so it is hidden from screen readers
+                 and disappears entirely on narrow screens. --}}
+            <svg class="tal-cta-watermark" viewBox="100 60 312 392" aria-hidden="true" focusable="false">
+                <rect x="125.4" y="84.5" width="261.1" height="343" fill="none"
+                      stroke="currentColor" stroke-width="7" opacity="0.62"/>
+                <rect x="161.3" y="140.8" width="189.4" height="20" fill="currentColor" opacity="0.52"/>
+                <rect x="161.3" y="176.8" width="145.0" height="20" fill="currentColor" opacity="0.52"/>
+                <rect x="161.3" y="223.7" width="189.4" height="64.5" fill="currentColor" opacity="0.95"/>
+                <rect x="161.3" y="312.0" width="189.4" height="20" fill="currentColor" opacity="0.52"/>
+                <rect x="161.3" y="348.0" width="112.6" height="20" fill="currentColor" opacity="0.52"/>
+            </svg>
+            <div class="tal-band-inner tal-cta-inner">
+                <h2 class="tal-cta-title is-title">{{@custom.cta_button_text}}</h2>
+                {{#if @custom.cta_body}}
+                    <p class="tal-cta-text is-body">{{@custom.cta_body}}</p>
+                {{/if}}
+                <a class="tal-button is-inverse" href="{{@custom.cta_button_url}}">{{t "Share your account"}} {{> "icons/arrow"}}</a>
+            </div>
+        </section>
+    {{/if}}
+
+</main>
+
+{{/post}}
